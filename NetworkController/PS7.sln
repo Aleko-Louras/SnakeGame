@@ -5,6 +5,8 @@ VisualStudioVersion = 25.0.1706.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkController", "NetworkController.csproj", "{6D4A2ADF-817C-4AB4-859F-99D2F8940DC5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkTests", "..\NetworkTests\NetworkTests.csproj", "{176FC5BA-64A7-4CC3-99F6-6E19EB708FDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6D4A2ADF-817C-4AB4-859F-99D2F8940DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D4A2ADF-817C-4AB4-859F-99D2F8940DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D4A2ADF-817C-4AB4-859F-99D2F8940DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{176FC5BA-64A7-4CC3-99F6-6E19EB708FDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{176FC5BA-64A7-4CC3-99F6-6E19EB708FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{176FC5BA-64A7-4CC3-99F6-6E19EB708FDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{176FC5BA-64A7-4CC3-99F6-6E19EB708FDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

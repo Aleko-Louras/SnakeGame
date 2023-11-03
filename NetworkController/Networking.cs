@@ -107,9 +107,9 @@ public static class Networking {
                     break;
                 }
             // Didn't find any IPV4 addresses
-            if (!foundIPV4) { 
-                SocketState newState = new SocketState(toCall,new
-               
+            if (!foundIPV4) {
+
+                SocketState state1 = new SocketState(toCall, "There was an error finding the IPV4 address.");
                 // TODO: Indicate an error to the user, as specified in the documentation
             }
         } catch (Exception) {
@@ -118,6 +118,7 @@ public static class Networking {
                 ipAddress = IPAddress.Parse(hostName);
             } catch (Exception) {
                 // TODO: Indicate an error to the user, as specified in the documentation
+                SocketState state2 = new SocketState(toCall, "There was an error finding the IP address.");
             }
         }
 
@@ -128,7 +129,8 @@ public static class Networking {
         // Nagle's algorithm can cause problems for a latency-sensitive 
         // game like ours will be 
         socket.NoDelay = true;
-
+        SocketState state = new SocketState(toCall, socket);
+        state.TheSocket.BeginConnect(ipAddress, port, ConnectedCallback, (toCall, state));
         // TODO: Finish the remainder of the connection process as specified.
     }
 
@@ -146,7 +148,15 @@ public static class Networking {
     /// </summary>
     /// <param name="ar">The object asynchronously passed via BeginConnect</param>
     private static void ConnectedCallback(IAsyncResult ar) {
-        throw new NotImplementedException();
+        (SocketState state, Action<SocketState> toCall) = ((SocketState, Action<SocketState>))ar.AsyncState!;
+        try { state.TheSocket.EndConnect(ar);
+            state.OnNetworkAction.Invoke(state);
+            //listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));
+        }
+        catch (Exception)
+        {
+            SocketState state2 = new SocketState(toCall, "There was a connection error.");
+        }
     }
 
 

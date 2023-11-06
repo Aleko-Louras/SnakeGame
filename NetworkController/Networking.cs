@@ -139,6 +139,12 @@ public static class Networking {
         SocketState state = new SocketState(toCall, socket);
         var result = state.TheSocket.BeginConnect(ipAddress, port, ConnectedCallback, (state, toCall));
         bool success = result.AsyncWaitHandle.WaitOne(3000, true);
+        if(!success)
+        {
+            state.ErrorOccurred = true;
+            state.ErrorMessage = "An error occured: the connection timed out";
+            state.OnNetworkAction(state);
+        }
         
         // TODO: Finish the remainder of the connection process as specified.
     }

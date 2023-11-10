@@ -1,4 +1,11 @@
-﻿using System;
+﻿///
+/// This class creates a Networking library for
+/// handing network connections
+///
+/// Adapted from CS 3500 code by Aleko Louras and Quinn Pritchett
+/// November 2023
+///
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -19,16 +26,17 @@ public static class Networking {
     /// </summary>
     /// <param name="toCall">The method to call when a new connection is made</param>
     /// <param name="port">The the port to listen on</param>
-    public static TcpListener StartServer(Action<SocketState> toCall, int port) { 
-        TcpListener listener = new TcpListener(IPAddress.Any, port); //make the listener.
-        listener.Start();//Start the listener.
+    public static TcpListener StartServer(Action<SocketState> toCall, int port) {
+        TcpListener listener = new TcpListener(IPAddress.Any, port); // Create the listener.
         try
         {
+            listener.Start();//Start the listener.
             listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));//Begin accepting a client (start event loop).
             return listener;
         }
         catch (Exception)
         {
+            Console.WriteLine("An unexpected error occured");
             return listener;
         }
     }
@@ -58,12 +66,14 @@ public static class Networking {
             
             Socket newClient = listener.EndAcceptSocket(ar);
             SocketState state = new SocketState(toCall, newClient);
-            state.OnNetworkAction.Invoke(state);
+            state.OnNetworkAction.Invoke(state); // TODO: Do we need Invoke here, or can you use OnNetworkAction(state)
             listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));
         }
         catch(Exception)
         {
-            SocketState state = new SocketState(toCall, "There was a network error.");
+            SocketState errrorState = new SocketState(toCall, "There was a network error.");
+            errrorState.OnNetworkAction(errrorState);
+
         }
 
     }
@@ -116,7 +126,8 @@ public static class Networking {
             // Didn't find any IPV4 addresses
             if (!foundIPV4) {
 
-                SocketState state1 = new SocketState(toCall, "There was an error finding the IPV4 address.");
+                SocketState errorState = new SocketState(toCall, "There was an error finding the IPV4 address.");
+                toCall.Invoke(errorState); // TODO: Is this correct?
                 // TODO: Indicate an error to the user, as specified in the documentation
             }
         } catch (Exception) {
@@ -125,7 +136,8 @@ public static class Networking {
                 ipAddress = IPAddress.Parse(hostName);
             } catch (Exception) {
                 // TODO: Indicate an error to the user, as specified in the documentation
-                SocketState state2 = new SocketState(toCall, "There was an error finding the IP address.");
+                SocketState errorState = new SocketState(toCall, "There was an error finding the IP address.");
+                toCall.Invoke(errorState); // TODO: is this correct?
             }
         }
 
@@ -163,9 +175,14 @@ public static class Networking {
     /// </summary>
     /// <param name="ar">The object asynchronously passed via BeginConnect</param>
     private static void ConnectedCallback(IAsyncResult ar) {
+
         (SocketState state, Action<SocketState> toCall) = ((SocketState, Action<SocketState>))ar.AsyncState!;
-        try { state.TheSocket.EndConnect(ar);
+
+        try {
+            state.TheSocket.EndConnect(ar);
             state.OnNetworkAction(state);
+
+            toCall.Invoke(state); // TODO: Is this correct?
             //listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));
         }
         catch (Exception e)

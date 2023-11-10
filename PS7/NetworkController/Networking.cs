@@ -36,7 +36,6 @@ public static class Networking {
         }
         catch (Exception)
         {
-            Console.WriteLine("An unexpected error occured");
             return listener;
         }
     }
@@ -63,18 +62,24 @@ public static class Networking {
         (TcpListener listener, Action<SocketState> toCall) = ((TcpListener, Action<SocketState>))ar.AsyncState!;
         try
         {
-            
             Socket newClient = listener.EndAcceptSocket(ar);
             SocketState state = new SocketState(toCall, newClient);
-            state.OnNetworkAction.Invoke(state); // TODO: Do we need Invoke here, or can you use OnNetworkAction(state)
-            listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));
+            state.OnNetworkAction(state);
+            try {
+                listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));
+            } catch(Exception) {
+                state.ErrorMessage = "An erorr occured";
+                state.ErrorOccurred = true;
+                state.OnNetworkAction(state);
+            }
+
         }
         catch(Exception)
         {
             SocketState errrorState = new SocketState(toCall, "There was a network error.");
             errrorState.OnNetworkAction(errrorState);
-
         }
+        
 
     }
 
@@ -106,8 +111,6 @@ public static class Networking {
     /// <param name="hostName">The server to connect to</param>
     /// <param name="port">The port on which the server is listening</param>
     public static void ConnectToServer(Action<SocketState> toCall, string hostName, int port) {
-        // TODO: This method is incomplete, but contains a starting point 
-        //       for decoding a host address
 
         // Establish the remote endpoint for the socket.
         IPHostEntry ipHostInfo;
@@ -127,17 +130,16 @@ public static class Networking {
             if (!foundIPV4) {
 
                 SocketState errorState = new SocketState(toCall, "There was an error finding the IPV4 address.");
-                toCall.Invoke(errorState); // TODO: Is this correct?
-                // TODO: Indicate an error to the user, as specified in the documentation
+                toCall.Invoke(errorState); 
             }
         } catch (Exception) {
             // see if host name is a valid ipaddress
             try {
                 ipAddress = IPAddress.Parse(hostName);
             } catch (Exception) {
-                // TODO: Indicate an error to the user, as specified in the documentation
+               
                 SocketState errorState = new SocketState(toCall, "There was an error finding the IP address.");
-                toCall.Invoke(errorState); // TODO: is this correct?
+                toCall(errorState); 
             }
         }
 
@@ -157,8 +159,6 @@ public static class Networking {
             state.ErrorMessage = "An error occured: the connection timed out";
             state.OnNetworkAction(state);
         }
-        
-        // TODO: Finish the remainder of the connection process as specified.
     }
 
     /// <summary>
@@ -182,8 +182,7 @@ public static class Networking {
             state.TheSocket.EndConnect(ar);
             state.OnNetworkAction(state);
 
-            toCall.Invoke(state); // TODO: Is this correct?
-            //listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));
+            toCall.Invoke(state); 
         }
         catch (Exception e)
         {
@@ -242,19 +241,23 @@ public static class Networking {
     /// This contains the SocketState that is stored with the callback when the initial BeginReceive is called.
     /// </param>
     private static void ReceiveCallback(IAsyncResult ar) {
+
         SocketState state = (SocketState)ar.AsyncState!;
-        try
-        {
+
+        try {
             int numBytes = state.TheSocket.EndReceive(ar);
-            lock (state.data)
-            {
-                string data = Encoding.UTF8.GetString(state.buffer, 0, numBytes);
-                state.data.Append(data);
+            if (numBytes > 0) {
+                lock (state.data) {
+                    string data = Encoding.UTF8.GetString(state.buffer, 0, numBytes);
+                    state.data.Append(data);
+                }
+                state.OnNetworkAction(state);
+            } else {
+                state.ErrorOccurred = true;
+                state.ErrorMessage = "An error occured processing data.";
+                state.OnNetworkAction(state);
             }
-            state.OnNetworkAction(state);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             state.ErrorOccurred = true;
             state.ErrorMessage = e.ToString() + "- An error occured processing data.";
             state.OnNetworkAction(state);

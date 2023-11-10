@@ -59,27 +59,30 @@ public static class Networking {
     /// <param name="ar">The object asynchronously passed via BeginAcceptSocket. It must contain a tuple with 
     /// 1) a delegate so the user can take action (a SocketState Action), and 2) the TcpListener</param>
     private static void AcceptNewClient(IAsyncResult ar) {
+
         (TcpListener listener, Action<SocketState> toCall) = ((TcpListener, Action<SocketState>))ar.AsyncState!;
+        Socket newClient;
         try
         {
-            Socket newClient = listener.EndAcceptSocket(ar);
-            SocketState state = new SocketState(toCall, newClient);
-            state.OnNetworkAction(state);
-            try {
-                listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));
-            } catch(Exception) {
-                state.ErrorMessage = "An erorr occured";
-                state.ErrorOccurred = true;
-                state.OnNetworkAction(state);
-            }
-
+            newClient = listener.EndAcceptSocket(ar);
+            
         }
         catch(Exception)
         {
             SocketState errrorState = new SocketState(toCall, "There was a network error.");
             errrorState.OnNetworkAction(errrorState);
+            return;
         }
-        
+        SocketState state = new SocketState(toCall, newClient);
+        state.OnNetworkAction(state);
+        try {
+            listener.BeginAcceptSocket(AcceptNewClient, (listener, toCall));
+        } catch (Exception) {
+            state.ErrorMessage = "An erorr occured";
+            state.ErrorOccurred = true;
+            state.OnNetworkAction(state);
+        }
+
 
     }
 
@@ -139,7 +142,8 @@ public static class Networking {
             } catch (Exception) {
                
                 SocketState errorState = new SocketState(toCall, "There was an error finding the IP address.");
-                toCall(errorState); 
+                toCall(errorState);
+                return;
             }
         }
 
@@ -246,7 +250,7 @@ public static class Networking {
 
         try {
             int numBytes = state.TheSocket.EndReceive(ar);
-            if (numBytes > 0) {
+            if (numBytes > 0) {  // If data was recieved proceed, otherwise and erorr occured 
                 lock (state.data) {
                     string data = Encoding.UTF8.GetString(state.buffer, 0, numBytes);
                     state.data.Append(data);
@@ -312,7 +316,7 @@ public static class Networking {
         }
         catch(Exception)
         {
-
+            // do nothing
         }
     }
 
@@ -337,11 +341,11 @@ public static class Networking {
         try
         {
             socket.BeginSend(messageBytes, 0, messageBytes.Length, SocketFlags.None, SendAndCloseCallback, socket);
-            socket.Close();
             return true;
         }
         catch (Exception)
         {
+            socket.Shutdown(SocketShutdown.Both);
             socket.Close();
             return false;
         }
@@ -369,7 +373,7 @@ public static class Networking {
         }
         catch (Exception)
         {
-
+            // do nothing
         }
     }
 }

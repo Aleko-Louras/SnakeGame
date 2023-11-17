@@ -1,7 +1,10 @@
 ﻿namespace SnakeGame;
+using GController;
 
 public partial class MainPage : ContentPage
+   
 {
+    GameController gController = new GameController();
     public MainPage()
     {
         InitializeComponent();
@@ -65,8 +68,9 @@ public partial class MainPage : ContentPage
             DisplayAlert("Error", "Name must be less than 16 characters", "OK");
             return;
         }
-        DisplayAlert("Delete this", "Code to start the controller's connecting process goes here", "OK");
-
+        //DisplayAlert("Delete this", "Code to start the controller's connecting process goes here", "OK");
+        gController.Connect(serverText.Text);
+        Console.WriteLine("Clicked");
         keyboardHack.Focus();
     }
 

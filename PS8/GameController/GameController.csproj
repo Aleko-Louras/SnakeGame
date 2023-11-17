@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WorldModel\WorldModel.csproj" />
+    <ProjectReference Include="..\Vector2D\Vector2D.csproj" />
+    <ProjectReference Include="..\SnakeClient\SnakeClient.csproj" />
+    <ProjectReference Include="..\NetworkController\NetworkController.csproj" />
+  </ItemGroup>
 </Project>

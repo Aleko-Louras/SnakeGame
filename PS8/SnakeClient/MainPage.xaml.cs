@@ -69,7 +69,7 @@ public partial class MainPage : ContentPage
             return;
         }
         //DisplayAlert("Delete this", "Code to start the controller's connecting process goes here", "OK");
-        gController.Connect(serverText.Text);
+        gController.Connect(serverText.Text, nameText.Text);
         Console.WriteLine("Clicked");
         keyboardHack.Focus();
     }

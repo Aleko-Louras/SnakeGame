@@ -13,12 +13,14 @@ using Microsoft.Maui;
 using System.Net;
 using Font = Microsoft.Maui.Graphics.Font;
 using SizeF = Microsoft.Maui.Graphics.SizeF;
+using WorldModel;
 
 
 
 namespace SnakeGame;
 public class WorldPanel : IDrawable
 {
+
     private IImage wall;
     private IImage background;
 
@@ -38,8 +40,22 @@ public class WorldPanel : IDrawable
         }
     }
 
+    private World theWorld;
+    private GraphicsView graphicsView = new();
+    private int viewSize = 2000;
+
     public WorldPanel()
     {
+        graphicsView.Drawable = this;
+        
+    }
+
+    public void SetWorld(World w) {
+        theWorld = w;
+        
+    }
+    public void Invalidate() {
+        graphicsView.Invalidate();
     }
 
     private void InitializeDrawing()
@@ -57,9 +73,19 @@ public class WorldPanel : IDrawable
         // undo previous transformations from last frame
         canvas.ResetState();
 
+        //canvas.Translate((float)viewSize / 2, (float)viewSize / 2);
+
         // example code for how to draw
         // (the image is not visible in the starter code)
+        canvas.DrawImage(background, 0, 0, 900, 900);
         canvas.DrawImage(wall, 0, 0, wall.Width, wall.Height);
+        lock (theWorld) {
+            foreach (Wall w in theWorld.Walls.Values) {
+                canvas.DrawImage(wall, (float)w.p1.X, (float)w.p1.Y, wall.Width, wall.Height);
+            }
+        }
+        Console.WriteLine("Redraw");
+        Debug.WriteLine("Redraw");
     }
 
 }

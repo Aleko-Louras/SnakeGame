@@ -18,6 +18,11 @@ public class GameController {
         connectedPlayer = "";
 
     }
+
+    public World GetWorld() {
+        return theWorld;
+    }
+
     public void Connect(string serverAddress, string playerName) {
         Networking.ConnectToServer(OnConnect, serverAddress, 11000);
         connectedPlayer = playerName;
@@ -53,6 +58,7 @@ public class GameController {
 
         string totalData = state.GetData();
         string[] parts = Regex.Split(totalData, @"(?<=[\n])");
+
         lock (theWorld) {
 
             // Player ID comes first, assign it
@@ -72,7 +78,6 @@ public class GameController {
         }
 
         recievedSetup = true;
-        Networking.GetData(state);
     }
 
     private void UpdateFromServer(SocketState state) {
@@ -91,7 +96,12 @@ public class GameController {
                     if (nextSnake.died) {
                         state.RemoveData(0, parts[i].Length);
                     } else {
-                        theWorld.Snakes[nextSnake.snake] = nextSnake;
+                        if (theWorld.Snakes.ContainsKey(nextSnake.snake)) {
+                            theWorld.Snakes[nextSnake.snake] = nextSnake;
+                        } else {
+                            theWorld.Snakes.Add(nextSnake.snake, nextSnake);
+                        }
+                        
                         state.RemoveData(0, parts[i].Length);
                     }
                 } else if (doc.RootElement.TryGetProperty("power", out _)) {
@@ -109,8 +119,8 @@ public class GameController {
         }
 
         // TODO: Notify the view that a new game world has arrived from the server
+        
         UpdateArrived?.Invoke();
-
         // Continue the Networ loop
         Networking.GetData(state);
     }

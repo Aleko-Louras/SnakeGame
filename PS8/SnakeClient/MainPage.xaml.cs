@@ -4,11 +4,16 @@ using GController;
 public partial class MainPage : ContentPage
    
 {
-    GameController gController = new GameController();
+    GameController gController;
     public MainPage()
     {
         InitializeComponent();
-        graphicsView.Invalidate();
+        gController = new GameController();
+       
+        //worldPanel.SetWorld(gController.GetWorld());
+
+        gController.UpdateArrived += OnFrame;
+
     }
 
     void OnTapped(object sender, EventArgs args)
@@ -80,6 +85,8 @@ public partial class MainPage : ContentPage
     public void OnFrame()
     {
         Dispatcher.Dispatch(() => graphicsView.Invalidate());
+        worldPanel.SetWorld(gController.GetWorld());
+
     }
 
     private void ControlsButton_Clicked(object sender, EventArgs e)

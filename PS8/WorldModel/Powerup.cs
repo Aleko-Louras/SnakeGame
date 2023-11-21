@@ -1,4 +1,5 @@
 ﻿using System;
+using SnakeGame;
 namespace WorldModel
 {
 	public class Powerup
@@ -7,7 +8,7 @@ namespace WorldModel
 		{
 			get; private set;
 		} // powerup's unique ID
-		public SnakeGame.Vector2D loc
+		public Vector2D loc
 		{
 			get; private set;
 		} // location of powerup
@@ -16,7 +17,7 @@ namespace WorldModel
 			get; private set;
 		} // indicates if the powerup was collected on this frame
 
-		public Powerup(int power, SnakeGame.Vector2D loc, bool died)
+		public Powerup(int power, Vector2D loc, bool died)
 		{
 			this.power = power; this.loc = loc; this.died = died;
 		}

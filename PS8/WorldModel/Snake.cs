@@ -1,12 +1,13 @@
 ﻿using System;
+using SnakeGame;
 namespace WorldModel
 {
 	public class Snake
 	{
 		public int snake { get; private set; }
         public string name { get; private set; }
-		public List<SnakeGame.Vector2D> body { get; private set; }
-        public SnakeGame.Vector2D dir { get; private set; }
+		public List<Vector2D> body { get; private set; }
+        public Vector2D dir { get; private set; }
         public int score { get; private set; }
         public bool died { get; private set; }
         public bool alive { get; private set; }
@@ -15,8 +16,8 @@ namespace WorldModel
 
         public Snake(int snake,
 					string name,
-					List<SnakeGame.Vector2D> body,
-					SnakeGame.Vector2D dir,
+					List<Vector2D> body,
+					Vector2D dir,
 					int score,
                     bool died,
 					bool alive,

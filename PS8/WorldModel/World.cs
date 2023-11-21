@@ -5,6 +5,7 @@ public class World
     public Dictionary<int, Snake> Snakes;
     public Dictionary<int, Powerup> Powerups;
     public Dictionary<int, Wall> Walls;
+    public int playerID;
     public int Size
     {
         get; private set;

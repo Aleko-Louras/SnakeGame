@@ -11,11 +11,11 @@ public class GameController
     private WorldModel.World theWorld;
     private string connectedPlayer;
     bool recievedSetup;
-    int playerId;
+    int playerID;
 
     public GameController()
     {
-        theWorld = new WorldModel.World(2000);//TODO
+        theWorld = new WorldModel.World(2000);
     }
     public void Connect(string serverAddress, string playerName)
     {
@@ -60,20 +60,24 @@ public class GameController
 
         string totalData = state.GetData();
         string[] parts = Regex.Split(totalData, @"(?<=[\n])");
-
-        // Player ID comes first, assign it
-        playerId = int.Parse(parts[0]);
-        state.RemoveData(0, parts[0].Length);
-        theWorld = new WorldModel.World(int.Parse(parts[1]));
-        state.RemoveData(0, parts[1].Length);
-
-        // Walls come second, write them
-        for (int i = 2; i < parts.Length - 1; i++)
+        lock (theWorld)
         {
-            WorldModel.Wall? nextWall = JsonSerializer.Deserialize<WorldModel.Wall>(parts[i])!;
 
-            theWorld.Walls.Add(nextWall.wall, nextWall);
-            state.RemoveData(0, parts[i].Length);
+            // Player ID comes first, assign it
+            playerID = int.Parse(parts[0]);
+            theWorld.playerID = playerID;
+            state.RemoveData(0, parts[0].Length);
+            theWorld = new WorldModel.World(int.Parse(parts[1]));
+            state.RemoveData(0, parts[1].Length);
+
+            // Walls come second, write them
+            for (int i = 2; i < parts.Length - 1; i++)
+            {
+                WorldModel.Wall? nextWall = JsonSerializer.Deserialize<WorldModel.Wall>(parts[i])!;
+
+                theWorld.Walls.Add(nextWall.wall, nextWall);
+                state.RemoveData(0, parts[i].Length);
+            }
         }
 
         recievedSetup = true;
@@ -87,28 +91,44 @@ public class GameController
         string[] parts = Regex.Split(totalData, @"(?<=[\n])");
 
         // Loop through the snakes
-
-        for (int i = 0; i < parts.Length - 1; i++)
+        lock (theWorld)
         {
-            WorldModel.Snake? nextSnake = JsonSerializer.Deserialize<WorldModel.Snake>(parts[i])!;
-
-            // Check if the incoming object is a snake or a powerup
-
-            JsonDocument doc = JsonDocument.Parse(parts[i]);
-            if (doc.RootElement.TryGetProperty("snake", out _))
+            for (int i = 0; i < parts.Length - 1; i++)
             {
-                if (nextSnake.died)
-                    theWorld.Snakes.Remove(nextSnake.snake);
-                else
-                    theWorld.Snakes.Add(nextSnake.snake, nextSnake);
-            }
-            else if (doc.RootElement.TryGetProperty("power", out _))
-            {
-                Console.WriteLine("hello");
+                // Check if the incoming object is a snake or a powerup
+
+                JsonDocument doc = JsonDocument.Parse(parts[i]);
+                if (doc.RootElement.TryGetProperty("snake", out _))
+                {
+                    WorldModel.Snake? nextSnake = JsonSerializer.Deserialize<WorldModel.Snake>(parts[i])!;
+                    if (nextSnake.died)
+                    {
+                        state.RemoveData(0, parts[i].Length);
+                    }
+                    else
+                    {
+                        theWorld.Snakes[nextSnake.snake] = nextSnake;
+                        state.RemoveData(0, parts[i].Length);
+                    }
+                }
+                else if (doc.RootElement.TryGetProperty("power", out _))
+                {
+                    WorldModel.Powerup? nextPowerup = JsonSerializer.Deserialize<WorldModel.Powerup>(parts[i])!;
+
+                    if (nextPowerup.died)
+                    {
+                        theWorld.Powerups.Remove(nextPowerup.power); // maybe a problem?
+                        state.RemoveData(0, parts[i].Length);
+                    }
+                    else
+                    {
+                        theWorld.Powerups[nextPowerup.power] = nextPowerup;
+                        state.RemoveData(0, parts[i].Length);
+                    }
+                }
             }
         }
 
-        recievedSetup = true;
         Networking.GetData(state);
     }
 }

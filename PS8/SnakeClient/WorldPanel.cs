@@ -72,17 +72,28 @@ public class WorldPanel : IDrawable
 
         // undo previous transformations from last frame
         canvas.ResetState();
+        if (theWorld != null)
+        {
+            //canvas.Translate((float)viewSize / 2, (float)viewSize / 2);
 
-        //canvas.Translate((float)viewSize / 2, (float)viewSize / 2);
+            // example code for how to draw
+            // (the image is not visible in the starter code)
+            theWorld.Snakes.TryGetValue(theWorld.playerID, out var value);
 
-        // example code for how to draw
-        // (the image is not visible in the starter code)
-        canvas.DrawImage(background, 0, 0, 900, 900);
-        canvas.DrawImage(wall, 0, 0, wall.Width, wall.Height);
-        lock (theWorld) {
-            foreach (Wall w in theWorld.Walls.Values) {
-                canvas.DrawImage(wall, (float)w.p1.X, (float)w.p1.Y, wall.Width, wall.Height);
-            }
+            float playerX = (float)value.body[value.body.Count].GetX();
+            float playerY = (float)value.body[value.body.Count].GetY();
+
+            //canvas.Translate(-playerX + (viewSize / 2), -playerY + (viewSize / 2));
+            //canvas.DrawImage(background, 0, 0, background.Width, background.Height);
+            canvas.DrawImage(background, (-theWorld.Size / 2), (-theWorld.Size / 2), theWorld.Size, theWorld.Size);
+            //canvas.DrawImage(wall, 0, 0, wall.Width, wall.Height);
+            //lock (theWorld) {
+            //    foreach (Wall w in theWorld.Walls.Values)
+            //    {
+            //        canvas.DrawImage(wall, (float)w.p1.X, (float)w.p1.Y, wall.Width, wall.Height);
+            //    }
+
+            //}
         }
         Console.WriteLine("Redraw");
         Debug.WriteLine("Redraw");

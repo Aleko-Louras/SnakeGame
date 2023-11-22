@@ -14,12 +14,14 @@ using System.Net;
 using Font = Microsoft.Maui.Graphics.Font;
 using SizeF = Microsoft.Maui.Graphics.SizeF;
 using WorldModel;
-
-
+using Point = Microsoft.Maui.Graphics.Point;
 
 namespace SnakeGame;
 public class WorldPanel : IDrawable
 {
+    // A delegate for DrawObjectWithTransform
+    // Methods matching this delegate can draw whatever they want onto the canvas
+    public delegate void ObjectDrawer(object o, ICanvas canvas);
 
     private IImage wall;
     private IImage background;
@@ -42,7 +44,7 @@ public class WorldPanel : IDrawable
 
     private World theWorld;
     private GraphicsView graphicsView = new();
-    private int viewSize = 2000;
+    private int viewSize = 900;
 
     public WorldPanel()
     {
@@ -74,29 +76,79 @@ public class WorldPanel : IDrawable
         canvas.ResetState();
         if (theWorld != null)
         {
-            canvas.Translate((float)viewSize / 2, (float)viewSize / 2);
-
-            //theWorld.Snakes.TryGetValue(theWorld.playerID, out var value);
-
+            // First center the view on the player
             theWorld.Snakes.TryGetValue(theWorld.playerID, out Snake playerSnake);
-            double playerX = playerSnake.body[0].GetX();
-            double playerY = playerSnake.body[0].GetY();
-            //float playerY = (float)value.body[value.body.Count].GetY();
+            float playerX = (float)playerSnake.body[playerSnake.body.Count - 1].GetX();
+            float playerY = (float)playerSnake.body[playerSnake.body.Count - 1].GetY();
+            canvas.Translate(-playerX + (viewSize / 2), -playerY + (viewSize / 2));
 
-            //canvas.Translate(-playerX + (viewSize / 2), -playerY + (viewSize / 2));
-            //canvas.DrawImage(background, 0, 0, background.Width, background.Height);
+            // Then draw the background first
             canvas.DrawImage(background, (-theWorld.Size / 2), (-theWorld.Size / 2), theWorld.Size, theWorld.Size);
-            //canvas.DrawImage(wall, 0, 0, wall.Width, wall.Height);
-            //lock (theWorld) {
-            //    foreach (Wall w in theWorld.Walls.Values)
-            //    {
-            //        canvas.DrawImage(wall, (float)w.p1.X, (float)w.p1.Y, wall.Width, wall.Height);
-            //    }
 
-            //}
+            // Draw the walls
+            lock (theWorld) {
+                foreach (Wall w in theWorld.Walls.Values) {
+                    DrawObjectWithTransform(canvas, w, w.p1.X, w.p1.Y, 0, WallDrawer);
+                    DrawObjectWithTransform(canvas, w, w.p2.X, w.p2.Y, 0, WallDrawer);
+                }
+
+                foreach(Powerup p in theWorld.Powerups.Values) {
+                    DrawObjectWithTransform(canvas, p, p.loc.GetX(), p.loc.GetY(), 0, PowerupDrawer); ;
+                }
+                foreach(Snake s in theWorld.Snakes.Values) {
+                    //DrawObjectWithTransform(canvas, s, s.body[s.body.Count -1 ].GetX(), s.body[s.body.Count -1].GetY(), 0, SnakeDrawer);
+                    if (s.snake == theWorld.playerID) {
+                        canvas.FillColor = Colors.Blue;
+                        canvas.FillRectangle((float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 50, 50);
+                    } else {
+                        DrawObjectWithTransform(canvas, s, s.body[s.body.Count -1 ].GetX(), s.body[s.body.Count -1].GetY(), 0, SnakeDrawer);
+
+                    }
+                }
+            }
         }
         Console.WriteLine("Redraw");
         Debug.WriteLine("Redraw");
     }
 
+    // <summary>
+    /// This method performs a translation and rotation to draw an object.
+    /// </summary>
+    /// <param name="canvas">The canvas object for drawing onto</param>
+    /// <param name="o">The object to draw</param>
+    /// <param name="worldX">The X component of the object's position in world space</param>
+    /// <param name="worldY">The Y component of the object's position in world space</param>
+    /// <param name="angle">The orientation of the object, measured in degrees clockwise from "up"</param>
+    /// <param name="drawer">The drawer delegate. After the transformation is applied, the delegate is invoked to draw whatever it wants</param>
+    private void DrawObjectWithTransform(ICanvas canvas, object o, double worldX, double worldY, double angle, ObjectDrawer drawer) {
+        // "push" the current transform
+        canvas.SaveState();
+
+        canvas.Translate((float)worldX, (float)worldY);
+        canvas.Rotate((float)angle);
+        drawer(o, canvas);
+
+        // "pop" the transform
+        canvas.RestoreState();
+    }
+
+    private void WallDrawer(object o, ICanvas canvas) {
+        Wall w = o as Wall;
+        canvas.DrawImage(wall, (float)w.p1.X, (float)w.p1.Y, wall.Width, wall.Height);
+    }
+
+    private void PowerupDrawer(object o, ICanvas canvas) {
+        Powerup p = o as Powerup;
+        int width = 10;
+        canvas.FillColor = Colors.Green;
+
+        canvas.FillRectangle(-(width / 2), -(width / 2), width, width);
+    }
+
+    private void SnakeDrawer(object o, ICanvas canvas) {
+        Snake s = o as Snake;
+
+        canvas.FillColor = Colors.Blue;
+        canvas.FillRectangle((float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 50, 50);
+    }
 }

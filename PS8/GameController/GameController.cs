@@ -13,6 +13,8 @@ public class GameController {
     public delegate void GameUpdateHandler();
     public event GameUpdateHandler UpdateArrived;
 
+    private SocketState theServer;
+
     public GameController() {
         theWorld = new World(2000);
         connectedPlayer = "";
@@ -23,6 +25,31 @@ public class GameController {
         return theWorld;
     }
 
+    public void SendMovement(string directionText) {
+
+        switch (directionText) {
+            case "w":
+                string upCommand = "{\"moving\":\"up\"}" + "\n";
+                Networking.Send(theServer.TheSocket, upCommand);
+                break;
+            case "a":
+                string leftCommand = "{\"moving\":\"left\"}" + "\n";
+                Networking.Send(theServer.TheSocket, leftCommand);
+                break;
+            case "s":
+                string downCommand = "{\"moving\":\"down\"}" + "\n";
+                Networking.Send(theServer.TheSocket, downCommand);
+                break;
+            case "d":
+                string rightCommand = "{\"moving\":\"right\"}" + "\n";
+                Networking.Send(theServer.TheSocket,rightCommand);
+                break;
+            default:
+                break;
+           
+        }
+    }
+
     public void Connect(string serverAddress, string playerName) {
         Networking.ConnectToServer(OnConnect, serverAddress, 11000);
         connectedPlayer = playerName;
@@ -30,7 +57,7 @@ public class GameController {
 
     private void OnConnect(SocketState state) {
 
-        SocketState theServer = state;
+        theServer = state;
         Networking.Send(state.TheSocket, connectedPlayer + "\n");
 
         // Event loop to receive messages from server
@@ -120,11 +147,9 @@ public class GameController {
                 }
             }
         }
-
-        // TODO: Notify the view that a new game world has arrived from the server
         
         UpdateArrived?.Invoke();
-        // Continue the Networ loop
+        // Continue the Network loop
         Networking.GetData(state);
     }
 }

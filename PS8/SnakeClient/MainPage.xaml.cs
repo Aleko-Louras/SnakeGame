@@ -28,18 +28,19 @@ public partial class MainPage : ContentPage
         if (text == "w")
         {
             // Move up
+            gController.SendMovement(text);
         }
         else if (text == "a")
         {
-            // Move left
+            gController.SendMovement(text);
         }
         else if (text == "s")
         {
-            // Move down
+            gController.SendMovement(text);
         }
         else if (text == "d")
         {
-            // Move right
+            gController.SendMovement(text);
         }
         entry.Text = "";
     }

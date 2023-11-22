@@ -85,30 +85,36 @@ public class WorldPanel : IDrawable
             // Then draw the background first
             canvas.DrawImage(background, (-theWorld.Size / 2), (-theWorld.Size / 2), theWorld.Size, theWorld.Size);
 
-            // Draw the walls
+            // Draw the objects
             lock (theWorld) {
                 foreach (Wall w in theWorld.Walls.Values) {
                     DrawObjectWithTransform(canvas, w, w.p1.X, w.p1.Y, 0, WallDrawer);
                     DrawObjectWithTransform(canvas, w, w.p2.X, w.p2.Y, 0, WallDrawer);
                 }
 
-                foreach(Powerup p in theWorld.Powerups.Values) {
+                foreach (Powerup p in theWorld.Powerups.Values) {
                     DrawObjectWithTransform(canvas, p, p.loc.GetX(), p.loc.GetY(), 0, PowerupDrawer); ;
                 }
-                foreach(Snake s in theWorld.Snakes.Values) {
-                    //DrawObjectWithTransform(canvas, s, s.body[s.body.Count -1 ].GetX(), s.body[s.body.Count -1].GetY(), 0, SnakeDrawer);
+
+                foreach (Snake s in theWorld.Snakes.Values) {
                     if (s.snake == theWorld.playerID) {
                         canvas.FillColor = Colors.Blue;
-                        canvas.FillRectangle((float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 50, 50);
+                        canvas.FillRectangle((float)s.body[s.body.Count - 1].GetX(),
+                                             (float)s.body[s.body.Count - 1].GetY(),
+                                             50,
+                                             50);
                     } else {
-                        DrawObjectWithTransform(canvas, s, s.body[s.body.Count -1 ].GetX(), s.body[s.body.Count -1].GetY(), 0, SnakeDrawer);
+                        DrawObjectWithTransform(canvas,
+                                                s,
+                                                s.body[s.body.Count - 1].GetX(),
+                                                s.body[s.body.Count - 1].GetY(),
+                                                0,
+                                                SnakeDrawer);
 
                     }
                 }
             }
         }
-        Console.WriteLine("Redraw");
-        Debug.WriteLine("Redraw");
     }
 
     // <summary>
@@ -134,7 +140,11 @@ public class WorldPanel : IDrawable
 
     private void WallDrawer(object o, ICanvas canvas) {
         Wall w = o as Wall;
-        canvas.DrawImage(wall, (float)w.p1.X, (float)w.p1.Y, wall.Width, wall.Height);
+        canvas.DrawImage(wall,
+                        (float)w.p1.X,
+                        (float)w.p1.Y,
+                        wall.Width,
+                        wall.Height);
     }
 
     private void PowerupDrawer(object o, ICanvas canvas) {
@@ -142,13 +152,20 @@ public class WorldPanel : IDrawable
         int width = 10;
         canvas.FillColor = Colors.Green;
 
-        canvas.FillRectangle(-(width / 2), -(width / 2), width, width);
+        if (!p.died) {
+            canvas.FillRectangle(-(width / 2), -(width / 2), width, width);
+        }
     }
 
     private void SnakeDrawer(object o, ICanvas canvas) {
         Snake s = o as Snake;
 
         canvas.FillColor = Colors.Blue;
-        canvas.FillRectangle((float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 50, 50);
+        if (!s.died) {
+            canvas.FillRectangle((float)s.body[s.body.Count - 1].GetX(),
+                                 (float)s.body[s.body.Count - 1].GetY(),
+                                 50,
+                                 50);
+        }
     }
 }

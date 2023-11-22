@@ -63,7 +63,7 @@ public class GameController {
         // Event loop to receive messages from server
         state.OnNetworkAction = RecieveMessage;
         Networking.GetData(state);
-
+        
     }
 
     private void RecieveMessage(SocketState state) {

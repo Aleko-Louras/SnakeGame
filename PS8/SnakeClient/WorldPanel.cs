@@ -159,20 +159,33 @@ public class WorldPanel : IDrawable
 
                 foreach (Snake s in theWorld.Snakes.Values)
                 {
-                    Vector2D prev = s.body[0];
-                    foreach (Vector2D v in s.body)
-                    {
-                        Vector2D newVec = prev - v;
-                        int newVecLength = (int)newVec.Length();
-                        newVec.Normalize();
 
-                        if (newVecLength < theWorld.Size)
-                        {
-                            float angle = newVec.ToAngle();
-                            DrawObjectWithTransform(canvas, newVecLength, v.X, v.Y, angle, SnakeSegmentDrawer);
-                        }
-                        prev = v;
+                    if (s.alive == false)
+                    {
+                        canvas.FontSize = 50;
+                        canvas.FontColor = Colors.Blue;
+                        canvas.DrawString("GAME OVER", (float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 500, 500, HorizontalAlignment.Left, VerticalAlignment.Center);
+
+
                     }
+                    if (s.alive)
+                    {
+                        Vector2D prev = s.body[0];
+                        foreach (Vector2D v in s.body)
+                        {
+                            Vector2D newVec = prev - v;
+                            int newVecLength = (int)newVec.Length();
+                            newVec.Normalize();
+
+                            if (newVecLength < theWorld.Size)
+                            {
+                                float angle = newVec.ToAngle();
+                                DrawObjectWithTransform(canvas, newVecLength, v.X, v.Y, angle, SnakeSegmentDrawer);
+                            }
+                            prev = v;
+                        }
+                    }
+                    
                 }
             }
         }
@@ -235,5 +248,11 @@ public class WorldPanel : IDrawable
         canvas.StrokeColor = Colors.Blue;
         canvas.DrawLine(0, 0, 0, -length);
 
+    }
+
+    private void GameOverDrawer(object o, ICanvas canvas)
+    {
+        canvas.FillRectangle(0, 0, 900, 900);
+        canvas.DrawString("GAME OVER", 0, 0, HorizontalAlignment.Center);
     }
 }

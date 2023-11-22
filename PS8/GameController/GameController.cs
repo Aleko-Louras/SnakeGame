@@ -65,10 +65,13 @@ public class GameController {
             playerID = int.Parse(parts[0]);
             theWorld.playerID = playerID;
             state.RemoveData(0, parts[0].Length);
-            theWorld = new World(int.Parse(parts[1]));
+
+            // The world size comes second, assign it
+            //theWorld = new World(int.Parse(parts[1]));
+            theWorld.Size = int.Parse(parts[1]);
             state.RemoveData(0, parts[1].Length);
 
-            // Walls come second, write them
+            // Walls come next, write them
             for (int i = 2; i < parts.Length - 1; i++) {
                 Wall? nextWall = JsonSerializer.Deserialize<Wall>(parts[i])!;
 
@@ -76,7 +79,7 @@ public class GameController {
                 state.RemoveData(0, parts[i].Length);
             }
         }
-
+        UpdateArrived.Invoke();
         recievedSetup = true;
     }
 

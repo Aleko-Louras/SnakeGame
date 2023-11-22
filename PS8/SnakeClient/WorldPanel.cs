@@ -74,14 +74,14 @@ public class WorldPanel : IDrawable
         canvas.ResetState();
         if (theWorld != null)
         {
-            //canvas.Translate((float)viewSize / 2, (float)viewSize / 2);
+            canvas.Translate((float)viewSize / 2, (float)viewSize / 2);
 
-            // example code for how to draw
-            // (the image is not visible in the starter code)
-            theWorld.Snakes.TryGetValue(theWorld.playerID, out var value);
+            //theWorld.Snakes.TryGetValue(theWorld.playerID, out var value);
 
-            float playerX = (float)value.body[value.body.Count].GetX();
-            float playerY = (float)value.body[value.body.Count].GetY();
+            theWorld.Snakes.TryGetValue(theWorld.playerID, out Snake playerSnake);
+            double playerX = playerSnake.body[0].GetX();
+            double playerY = playerSnake.body[0].GetY();
+            //float playerY = (float)value.body[value.body.Count].GetY();
 
             //canvas.Translate(-playerX + (viewSize / 2), -playerY + (viewSize / 2));
             //canvas.DrawImage(background, 0, 0, background.Width, background.Height);

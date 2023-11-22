@@ -8,7 +8,8 @@ public class World
     public int playerID;
     public int Size
     {
-        get; private set;
+        //get; private set;
+        get; set;
     }
     public World(int size)
     {

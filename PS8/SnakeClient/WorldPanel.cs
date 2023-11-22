@@ -87,30 +87,91 @@ public class WorldPanel : IDrawable
 
             // Draw the objects
             lock (theWorld) {
-                foreach (Wall w in theWorld.Walls.Values) {
-                    DrawObjectWithTransform(canvas, w, w.p1.X, w.p1.Y, 0, WallDrawer);
-                    DrawObjectWithTransform(canvas, w, w.p2.X, w.p2.Y, 0, WallDrawer);
+                foreach (Wall w in theWorld.Walls.Values)
+                {
+                    double wallp1X = w.p1.GetX();
+                    double wallp1Y = w.p1.GetY();
+
+                    double wallp2X = w.p2.GetX();
+                    double wallp2Y = w.p2.GetY();
+
+                    // Vertical Wall Case
+                    if (wallp1X == wallp2X)
+                    {
+                       
+
+                        // First coordinate above second, draw going down y axis, with p1 on top
+                        if (wallp1Y > wallp2Y)
+                        {
+                            double distance = wallp1Y - wallp2Y;
+                            double numberOfWalls = distance / 50;
+                            for (int i = 0; i <= numberOfWalls; i++)
+                            {
+                                DrawObjectWithTransform(canvas, wall, wallp1X, wallp1Y - (i * 50), 0, WallDrawer);
+                            }
+                        } else // Second coordinate abvove second, draw going down y axis with p2 on top
+                        {
+                            double distance = wallp2Y - wallp1Y;
+                            double numberOfWalls = distance / 50;
+
+                            for (int i = 0; i <= numberOfWalls; i++)
+                            {
+                                DrawObjectWithTransform(canvas, wall, wallp2X, wallp2Y - (i * 50), 0, WallDrawer);
+                            }
+                        }
+
+                    }
+
+                    // Horiontal Wall Case, the Y coords are equal compare the X
+                    else if (wallp1Y == wallp2Y)
+                    {
+
+                        // First coordinate before second coordinate
+                        if (wallp2X > wallp1X)
+                        {
+                            double distance = wallp2X - wallp1X;
+                            double numberOfWalls = distance / 50;
+
+                            for (int i = 0; i <= numberOfWalls; i++)
+                            {
+                                DrawObjectWithTransform(canvas, wall, wallp1X + (i * 50), wallp2Y, 0, WallDrawer);
+                            }
+
+                        } else
+                        {
+                            double distance = wallp1X - wallp2X;
+                            double numberOfWalls = distance / 50;
+
+                            for (int i = 0; i <= numberOfWalls; i++)
+                            {
+                                DrawObjectWithTransform(canvas, wall, wallp2X + (i * 50), wallp1Y , 0, WallDrawer);
+                            }
+
+                        }
+
+                        
+                    }
                 }
 
                 foreach (Powerup p in theWorld.Powerups.Values) {
                     DrawObjectWithTransform(canvas, p, p.loc.GetX(), p.loc.GetY(), 0, PowerupDrawer); ;
                 }
 
-                foreach (Snake s in theWorld.Snakes.Values) {
-                    if (s.snake == theWorld.playerID) {
-                        canvas.FillColor = Colors.Blue;
-                        canvas.FillRectangle((float)s.body[s.body.Count - 1].GetX(),
-                                             (float)s.body[s.body.Count - 1].GetY(),
-                                             50,
-                                             50);
-                    } else {
-                        DrawObjectWithTransform(canvas,
-                                                s,
-                                                s.body[s.body.Count - 1].GetX(),
-                                                s.body[s.body.Count - 1].GetY(),
-                                                0,
-                                                SnakeDrawer);
+                foreach (Snake s in theWorld.Snakes.Values)
+                {
+                    Vector2D prev = s.body[0];
+                    foreach (Vector2D v in s.body)
+                    {
+                        Vector2D newVec = prev - v;
+                        int newVecLength = (int)newVec.Length();
+                        newVec.Normalize();
 
+                        if (newVecLength < theWorld.Size)
+                        {
+                            float angle = newVec.ToAngle();
+                            DrawObjectWithTransform(canvas, newVecLength, v.X, v.Y, angle, SnakeSegmentDrawer);
+                        }
+                        prev = v;
                     }
                 }
             }
@@ -139,10 +200,9 @@ public class WorldPanel : IDrawable
     }
 
     private void WallDrawer(object o, ICanvas canvas) {
-        Wall w = o as Wall;
         canvas.DrawImage(wall,
-                        (float)w.p1.X,
-                        (float)w.p1.Y,
+                        -25,
+                        -25,
                         wall.Width,
                         wall.Height);
     }
@@ -167,5 +227,13 @@ public class WorldPanel : IDrawable
                                  50,
                                  50);
         }
+    }
+    private void SnakeSegmentDrawer(object o, ICanvas canvas)
+    {
+        int length = (int)o;
+        canvas.StrokeSize = 20;
+        canvas.StrokeColor = Colors.Blue;
+        canvas.DrawLine(0, 0, 0, -length);
+
     }
 }

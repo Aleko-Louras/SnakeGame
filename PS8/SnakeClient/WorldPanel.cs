@@ -15,6 +15,8 @@ using Font = Microsoft.Maui.Graphics.Font;
 using SizeF = Microsoft.Maui.Graphics.SizeF;
 using WorldModel;
 using Point = Microsoft.Maui.Graphics.Point;
+using static ObjCRuntime.Dlfcn;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SnakeGame;
 public class WorldPanel : IDrawable
@@ -179,11 +181,20 @@ public class WorldPanel : IDrawable
 
                             if (newVecLength < theWorld.Size)
                             {
+                                int snakeCol = s.snake % 10;
+                                canvas.StrokeColor = SnakeColorPicker(snakeCol);
                                 float angle = newVec.ToAngle();
+                                
+                                
                                 DrawObjectWithTransform(canvas, newVecLength, v.X, v.Y, angle, SnakeSegmentDrawer);
+                                canvas.FontColor = Colors.Blue;
+                                canvas.FontSize = 50;
+                                canvas.DrawString(s.name + ": " + s.score.ToString(), (float)prev.X, (float)prev.Y + 20, HorizontalAlignment.Center);
                             }
                             prev = v;
+                            
                         }
+                        
                     }
                     
                 }
@@ -245,7 +256,6 @@ public class WorldPanel : IDrawable
     {
         int length = (int)o;
         canvas.StrokeSize = 20;
-        canvas.StrokeColor = Colors.Blue;
         canvas.DrawLine(0, 0, 0, -length);
 
     }
@@ -254,5 +264,33 @@ public class WorldPanel : IDrawable
     {
         canvas.FillRectangle(0, 0, 900, 900);
         canvas.DrawString("GAME OVER", 0, 0, HorizontalAlignment.Center);
+    }
+    private Color SnakeColorPicker(int number)
+    {
+        switch (number)
+        {
+            case 1:
+                    return Colors.Red;
+            case 2:
+                    return Colors.Orange;
+            case 3:
+                    return Colors.LemonChiffon;
+            case 4:
+                    return Colors.Green;
+            case 5:
+                    return Colors.Blue;
+            case 6:
+                    return Colors.Purple;
+            case 7:
+                    return Colors.BlanchedAlmond;
+            case 8:
+                    return Colors.Brown;
+            case 9:
+                    return Colors.Black;
+            case 0:
+                    return Colors.Pink;
+
+        }
+        return Colors.AliceBlue;
     }
 }

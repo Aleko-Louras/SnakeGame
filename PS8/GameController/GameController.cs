@@ -6,7 +6,7 @@ using System.Text.Json;
 
 public class GameController {
     private World theWorld;
-    private string connectedPlayer;
+    private string connectedPlayer = "";
     private bool recievedSetup;
     private int playerID;
 
@@ -16,8 +16,7 @@ public class GameController {
     private SocketState theServer;
 
     public GameController() {
-        theWorld = new World(2000);
-        connectedPlayer = "";
+        theWorld = new World( 2000 );
 
     }
 
@@ -67,9 +66,11 @@ public class GameController {
     }
 
     private void RecieveMessage(SocketState state) {
-        if (state.ErrorOccurred) {
-            return;
-        }
+        //if (state.ErrorOccurred) {
+        //    // We need to do something else here in the case where there is an error.
+        //    // Perhaps a ErrorOccurred Event? 
+        //    return;
+        //}
         if (!recievedSetup) {
             InitialSetup(state);
         } else {
@@ -77,6 +78,7 @@ public class GameController {
         }
 
         //Continue the event loop
+        UpdateArrived?.Invoke();
         Networking.GetData(state);
 
     }
@@ -106,7 +108,7 @@ public class GameController {
                 state.RemoveData(0, parts[i].Length);
             }
         }
-        UpdateArrived.Invoke();
+        UpdateArrived?.Invoke();
         recievedSetup = true;
     }
 
@@ -146,11 +148,7 @@ public class GameController {
                     }
                 }
             }
-        }
-        
-        UpdateArrived?.Invoke();
-        // Continue the Network loop
-        Networking.GetData(state);
+        } 
     }
 }
 

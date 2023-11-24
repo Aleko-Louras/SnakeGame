@@ -76,6 +76,7 @@ public class WorldPanel : IDrawable
 
         // undo previous transformations from last frame
         canvas.ResetState();
+
         if (theWorld != null)
         {
             // First center the view on the player
@@ -162,14 +163,15 @@ public class WorldPanel : IDrawable
                 foreach (Snake s in theWorld.Snakes.Values)
                 {
 
-                    if (s.alive == false)
-                    {
-                        canvas.FontSize = 50;
-                        canvas.FontColor = Colors.Blue;
-                        canvas.DrawString("GAME OVER", (float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 500, 500, HorizontalAlignment.Left, VerticalAlignment.Center);
+                    //if (s.alive == false)
+                    //{
+                    //    canvas.FontSize = 50;
+                    //    canvas.FontColor = Colors.Blue;
+                    //    canvas.DrawString("GAME OVER", (float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 500, 500, HorizontalAlignment.Left, VerticalAlignment.Center);
 
 
-                    }
+                    //}
+
                     if (s.alive)
                     {
                         Vector2D prev = s.body[0];
@@ -187,16 +189,17 @@ public class WorldPanel : IDrawable
                                 
                                 
                                 DrawObjectWithTransform(canvas, newVecLength, v.X, v.Y, angle, SnakeSegmentDrawer);
-                                canvas.FontColor = Colors.Blue;
-                                canvas.FontSize = 50;
-                                canvas.DrawString(s.name + ": " + s.score.ToString(), (float)prev.X, (float)prev.Y + 20, HorizontalAlignment.Center);
+                                
+                                
+
                             }
-                            prev = v;
                             
+                            prev = v;
+                            DrawObjectWithTransform(canvas, s, (float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 0, NameDrawer);
+
                         }
                         
                     }
-                    
                 }
             }
         }
@@ -223,6 +226,14 @@ public class WorldPanel : IDrawable
         canvas.RestoreState();
     }
 
+    private void NameDrawer(object o, ICanvas canvas) {
+        Snake s = o as Snake;
+        canvas.FontColor = Colors.White;
+        canvas.FontSize = 18;
+        canvas.Font = Font.Default;
+        canvas.DrawString(s.name + " " + s.score.ToString(), 20, 0, 150, 100, HorizontalAlignment.Left, VerticalAlignment.Top);
+    }
+
     private void WallDrawer(object o, ICanvas canvas) {
         canvas.DrawImage(wall,
                         -25,
@@ -241,17 +252,6 @@ public class WorldPanel : IDrawable
         }
     }
 
-    private void SnakeDrawer(object o, ICanvas canvas) {
-        Snake s = o as Snake;
-
-        canvas.FillColor = Colors.Blue;
-        if (!s.died) {
-            canvas.FillRectangle((float)s.body[s.body.Count - 1].GetX(),
-                                 (float)s.body[s.body.Count - 1].GetY(),
-                                 50,
-                                 50);
-        }
-    }
     private void SnakeSegmentDrawer(object o, ICanvas canvas)
     {
         int length = (int)o;
@@ -265,6 +265,7 @@ public class WorldPanel : IDrawable
         canvas.FillRectangle(0, 0, 900, 900);
         canvas.DrawString("GAME OVER", 0, 0, HorizontalAlignment.Center);
     }
+
     private Color SnakeColorPicker(int number)
     {
         switch (number)

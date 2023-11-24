@@ -9,9 +9,6 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
         gController = new GameController();
-       
-        //worldPanel.SetWorld(gController.GetWorld());
-
         gController.UpdateArrived += OnFrame;
 
     }
@@ -76,7 +73,7 @@ public partial class MainPage : ContentPage
         }
         //DisplayAlert("Delete this", "Code to start the controller's connecting process goes here", "OK");
         gController.Connect(serverText.Text, nameText.Text);
-        Console.WriteLine("Clicked");
+        connectButton.IsEnabled = false;
         keyboardHack.Focus();
     }
 
@@ -85,9 +82,10 @@ public partial class MainPage : ContentPage
     /// </summary>
     public void OnFrame()
     {
-        Dispatcher.Dispatch(() => graphicsView.Invalidate());
         worldPanel.SetWorld(gController.GetWorld());
 
+        Dispatcher.Dispatch(() => graphicsView.Invalidate());
+        
     }
 
     private void ControlsButton_Clicked(object sender, EventArgs e)

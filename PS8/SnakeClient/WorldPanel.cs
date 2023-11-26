@@ -17,6 +17,8 @@ using WorldModel;
 using Point = Microsoft.Maui.Graphics.Point;
 using static ObjCRuntime.Dlfcn;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Timers;
+using Microsoft.Maui.Graphics;
 
 namespace SnakeGame;
 public class WorldPanel : IDrawable
@@ -157,20 +159,17 @@ public class WorldPanel : IDrawable
                 }
 
                 foreach (Powerup p in theWorld.Powerups.Values) {
-                    DrawObjectWithTransform(canvas, p, p.loc.GetX(), p.loc.GetY(), 0, PowerupDrawer); ;
+                    DrawObjectWithTransform(canvas, p, p.loc.GetX(), p.loc.GetY(), 0, PowerupDrawer);
                 }
 
                 foreach (Snake s in theWorld.Snakes.Values)
                 {
 
-                    //if (s.alive == false)
-                    //{
-                    //    canvas.FontSize = 50;
-                    //    canvas.FontColor = Colors.Blue;
-                    //    canvas.DrawString("GAME OVER", (float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 500, 500, HorizontalAlignment.Left, VerticalAlignment.Center);
+                    if (s.alive == false && s.snake == theWorld.playerID)
+                    {
+                        DrawObjectWithTransform(canvas, s, (float)s.body[s.body.Count - 1].GetX(), (float)s.body[s.body.Count - 1].GetY(), 0, GameOverDrawer);
 
-
-                    //}
+                    }
 
                     if (s.alive)
                     {
@@ -262,8 +261,26 @@ public class WorldPanel : IDrawable
 
     private void GameOverDrawer(object o, ICanvas canvas)
     {
-        canvas.FillRectangle(0, 0, 900, 900);
-        canvas.DrawString("GAME OVER", 0, 0, HorizontalAlignment.Center);
+        Snake s = o as Snake;
+        canvas.FillColor = Colors.Black;
+        canvas.FillRectangle(-450, -450, 900, 900);
+        canvas.FontColor = Colors.Red;
+        canvas.FontSize = 32;
+        canvas.Font = Font.Default;
+        switch (s.score)
+        {
+            case < 5:
+                canvas.DrawString("Yikes...", -150, -50, 300, 100, HorizontalAlignment.Center, VerticalAlignment.Center);
+                break;
+            case < 10:
+                canvas.DrawString("Decent...", -150, -50, 300, 100, HorizontalAlignment.Center, VerticalAlignment.Center);
+                break;
+            case < 15:
+                canvas.DrawString("Now its a game!", -150, -50, 300, 100, HorizontalAlignment.Center, VerticalAlignment.Center);
+                break;
+        }
+        
+
     }
 
     private Color SnakeColorPicker(int number)
@@ -294,4 +311,6 @@ public class WorldPanel : IDrawable
         }
         return Colors.AliceBlue;
     }
+   
+
 }

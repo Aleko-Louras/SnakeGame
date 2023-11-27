@@ -81,17 +81,18 @@ public class WorldPanel : IDrawable
 
         if (theWorld != null)
         {
-            // First center the view on the player
-            theWorld.Snakes.TryGetValue(theWorld.playerID, out Snake playerSnake);
-            float playerX = (float)playerSnake.body[playerSnake.body.Count - 1].GetX();
-            float playerY = (float)playerSnake.body[playerSnake.body.Count - 1].GetY();
-            canvas.Translate(-playerX + (viewSize / 2), -playerY + (viewSize / 2));
-
-            // Then draw the background first
-            canvas.DrawImage(background, (-theWorld.Size / 2), (-theWorld.Size / 2), theWorld.Size, theWorld.Size);
-
             // Draw the objects
             lock (theWorld) {
+
+                // First center the view on the player
+                theWorld.Snakes.TryGetValue(theWorld.playerID, out Snake playerSnake);
+                float playerX = (float)playerSnake.body[playerSnake.body.Count - 1].GetX();
+                float playerY = (float)playerSnake.body[playerSnake.body.Count - 1].GetY();
+                canvas.Translate(-playerX + (viewSize / 2), -playerY + (viewSize / 2));
+
+                // Then draw the background first
+                canvas.DrawImage(background, (-theWorld.Size / 2), (-theWorld.Size / 2), theWorld.Size, theWorld.Size);
+
                 foreach (Wall w in theWorld.Walls.Values)
                 {
                     double wallp1X = w.p1.GetX();

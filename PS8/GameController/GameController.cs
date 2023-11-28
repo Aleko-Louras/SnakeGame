@@ -88,7 +88,6 @@ public class GameController {
     private void InitialSetup(SocketState state) {
 
         string totalData = state.GetData();
-        Console.WriteLine(totalData);
         string[] parts = Regex.Split(totalData, @"(?<=[\n])");
 
        
@@ -112,77 +111,88 @@ public class GameController {
                 state.RemoveData(0, parts[1].Length);
             }
         }
-        //UpdateArrived?.Invoke();
-        
-        recievedSetup = true;
+        if (!(theWorld is null) && !(playerID is null))
+            recievedSetup = true;
     }
 
     private void UpdateFromServer(SocketState state) {
         // Parse the incoming message
         string totalData = state.GetData();
-        Console.WriteLine(totalData);
         string[] parts = Regex.Split(totalData, @"(?<=[\n])");
 
         lock (theWorld!) {
             for (int i = 0; i < parts.Length - 1; i++) {
-                if (parts[i].Length == 0) {
-                    state.RemoveData(0, parts[i].Length - 1);
-                    continue;
-                }
-                if (parts[parts.Length - 1] != "") {
-                    state.RemoveData(0, parts[i].Length - 1);
-                    break;
-                }
+                //if (parts[i].Length == 0) {
+                //    continue;
+                //}
+                //if (parts[parts.Length - 1] != "") {
+                //    break;
+                //}
 
                 // Check if the incoming object is a snake or a powerup
 
-
-
-
                 if (parts[i][0] == '{' && parts[i][parts[i].Length - 1] == '\n') {
-                    JsonDocument doc = JsonDocument.Parse(parts[i]);
+                    try {
+                        JsonDocument doc = JsonDocument.Parse(parts[i]);
 
-                    if (doc.RootElement.TryGetProperty("wall", out _)) {
-                        Wall? nextWall = JsonSerializer.Deserialize<Wall>(doc)!;
+                        if (doc.RootElement.TryGetProperty("wall", out _)) {
+                            Wall? nextWall = JsonSerializer.Deserialize<Wall>(doc)!;
 
-                        if (!theWorld.Walls.ContainsKey(nextWall.wall)) {
-                            theWorld.Walls.Add(nextWall.wall, nextWall);
-                        } else {
-                            //theWorld.Walls.Add(nextWall.wall, nextWall);
-                            theWorld.Walls[nextWall.wall] = nextWall;
-                        }
-
-                    } else if (doc.RootElement.TryGetProperty("snake", out _)) {
-                        Snake? nextSnake = JsonSerializer.Deserialize<Snake>(parts[i])!;
-
-                        if (nextSnake.dc == false) {
-                            if (theWorld.Snakes.ContainsKey(nextSnake.snake)) {
-                                theWorld.Snakes[nextSnake.snake] = nextSnake;
+                            if (!theWorld.Walls.ContainsKey(nextWall.wall)) {
+                                theWorld.Walls.Add(nextWall.wall, nextWall);
+                                state.RemoveData(0, parts[i].Length);
                             } else {
-                                theWorld.Snakes.Add(nextSnake.snake, nextSnake);
+                                theWorld.Walls[nextWall.wall] = nextWall;
+                                state.RemoveData(0, parts[i].Length);
                             }
-                        } else {
-                            if (theWorld.Snakes.ContainsKey(nextSnake.snake))
-                                theWorld.Snakes.Remove(nextSnake.snake);
-                        }
 
+                        } else if (doc.RootElement.TryGetProperty("snake", out _)) {
+                            Snake? nextSnake = JsonSerializer.Deserialize<Snake>(parts[i])!;
 
-                    } else if (doc.RootElement.TryGetProperty("power", out _)) {
-                        Powerup? nextPowerup = JsonSerializer.Deserialize<Powerup>(parts[i])!;
-
-                        if (nextPowerup.died) {
-                            theWorld.Powerups.Remove(nextPowerup.power);
-                        } else {
-                            if (theWorld.Powerups.ContainsKey(nextPowerup.power)) {
-                                theWorld.Powerups[nextPowerup.power] = nextPowerup;
+                            if (nextSnake.dc == false) {
+                                if (theWorld.Snakes.ContainsKey(nextSnake.snake)) {
+                                    theWorld.Snakes[nextSnake.snake] = nextSnake;
+                                    //state.RemoveData(0, parts[i].Length);
+                                } else {
+                                    theWorld.Snakes.Add(nextSnake.snake, nextSnake);
+                                    //state.RemoveData(0, parts[i].Length);
+                                }
                             } else {
-                                theWorld.Powerups.Add(nextPowerup.power, nextPowerup);
+                                if (theWorld.Snakes.ContainsKey(nextSnake.snake)) {
+                                    theWorld.Snakes.Remove(nextSnake.snake);
+                                    //state.RemoveData(0, parts[i].Length);
+                                }
+                            }
+
+
+                        } else if (doc.RootElement.TryGetProperty("power", out _)) {
+                            Powerup? nextPowerup = JsonSerializer.Deserialize<Powerup>(parts[i])!;
+
+                            if (nextPowerup.died) {
+                                theWorld.Powerups.Remove(nextPowerup.power);
+                                state.RemoveData(0, parts[i].Length);
+                            } else {
+                                if (theWorld.Powerups.ContainsKey(nextPowerup.power)) {
+                                    theWorld.Powerups[nextPowerup.power] = nextPowerup;
+                                    state.RemoveData(0, parts[i].Length);
+                                } else {
+                                    theWorld.Powerups.Add(nextPowerup.power, nextPowerup);
+                                    state.RemoveData(0, parts[i].Length);
+                                }
                             }
                         }
+
+                        
+                    } catch (Exception) {
+                        Console.WriteLine("error");
                     }
                     
                 }
-                state.RemoveData(0, parts[i].Length - 1);
+                //Console.WriteLine("The part is: ");
+                //Console.WriteLine(parts[i]);
+                //Console.WriteLine("The parts length is");
+                //Console.WriteLine(parts[i].Length);
+                //state.RemoveData(0, parts[i].Length);
             }
                 
         } 

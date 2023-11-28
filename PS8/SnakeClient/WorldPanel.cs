@@ -282,6 +282,9 @@ public class WorldPanel : IDrawable
             case < 15:
                 canvas.DrawString("Now its a game!", -150, -50, 300, 100, HorizontalAlignment.Center, VerticalAlignment.Center);
                 break;
+            case > 15:
+                canvas.DrawString("Good game!", -150, -50, 300, 100, HorizontalAlignment.Center, VerticalAlignment.Center);
+                break;
         }
         
 
@@ -292,28 +295,28 @@ public class WorldPanel : IDrawable
         switch (number)
         {
             case 1:
-                    return Colors.Red;
+                    return Colors.Black;
             case 2:
-                    return Colors.Orange;
+                    return Colors.Wheat;
             case 3:
-                    return Colors.LemonChiffon;
+                    return Colors.Red;
             case 4:
                     return Colors.Green;
             case 5:
                     return Colors.Blue;
             case 6:
-                    return Colors.Purple;
+                    return Colors.Yellow;
             case 7:
-                    return Colors.BlanchedAlmond;
+                    return Colors.Orange;
             case 8:
-                    return Colors.Brown;
+                    return Colors.Purple;
             case 9:
-                    return Colors.Black;
+                    return Colors.Gray;
             case 0:
-                    return Colors.Pink;
+                    return Colors.Cyan;
 
         }
-        return Colors.AliceBlue;
+        return Colors.DarkGreen;
     }
    
 

@@ -247,7 +247,7 @@ public class WorldPanel : IDrawable
 
     private void PowerupDrawer(object o, ICanvas canvas) {
         Powerup p = o as Powerup;
-        int width = 10;
+        int width = 15;
         canvas.FillColor = Colors.Green;
 
         if (!p.died) {
@@ -258,7 +258,7 @@ public class WorldPanel : IDrawable
     private void SnakeSegmentDrawer(object o, ICanvas canvas)
     {
         int length = (int)o;
-        canvas.StrokeSize = 20;
+        canvas.StrokeSize = 10;
         canvas.DrawLine(0, 0, 0, -length);
 
     }

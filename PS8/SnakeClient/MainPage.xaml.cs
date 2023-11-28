@@ -10,6 +10,7 @@ public partial class MainPage : ContentPage
         InitializeComponent();
         gController = new GameController();
         gController.UpdateArrived += OnFrame;
+        gController.NetworkError += OnError;
 
     }
 
@@ -86,6 +87,11 @@ public partial class MainPage : ContentPage
 
         Dispatcher.Dispatch(() => graphicsView.Invalidate());
         
+    }
+
+    public void OnError() {
+        DisplayAlert("Network Error", "A network error occured", "OK");
+        connectButton.IsEnabled = true;
     }
 
     private void ControlsButton_Clicked(object sender, EventArgs e)

@@ -79,16 +79,19 @@ public class WorldPanel : IDrawable
         // undo previous transformations from last frame
         canvas.ResetState();
 
-        if (theWorld != null)
+        if (theWorld != null  )
         {
             // Draw the objects
             lock (theWorld) {
 
                 // First center the view on the player
                 theWorld.Snakes.TryGetValue(theWorld.playerID, out Snake playerSnake);
-                float playerX = (float)playerSnake.body[playerSnake.body.Count - 1].GetX();
-                float playerY = (float)playerSnake.body[playerSnake.body.Count - 1].GetY();
-                canvas.Translate(-playerX + (viewSize / 2), -playerY + (viewSize / 2));
+                if (playerSnake != null) {
+
+                    float playerX = (float)playerSnake.body[playerSnake.body.Count - 1].GetX();
+                    float playerY = (float)playerSnake.body[playerSnake.body.Count - 1].GetY();
+                    canvas.Translate(-playerX + (viewSize / 2), -playerY + (viewSize / 2));
+                }
 
                 // Then draw the background first
                 canvas.DrawImage(background, (-theWorld.Size / 2), (-theWorld.Size / 2), theWorld.Size, theWorld.Size);

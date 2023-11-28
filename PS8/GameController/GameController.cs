@@ -1,4 +1,13 @@
-﻿namespace GController;
+﻿///
+/// GameController handles moving information between the Server and the
+/// Game world.
+///
+/// Aleko Louras and Quinn Pritchett
+/// November 2023
+///
+
+
+namespace GController;
 using NetworkUtil;
 using System.Text.RegularExpressions;
 using WorldModel;

@@ -1,4 +1,14 @@
-﻿using System.Collections.Generic;
+﻿///
+/// WorldPanel handles moving information between the Server and the
+/// Game world.
+///
+/// Aleko Louras and Quinn Pritchett
+/// November 2023
+///
+///
+
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using IImage = Microsoft.Maui.Graphics.IImage;

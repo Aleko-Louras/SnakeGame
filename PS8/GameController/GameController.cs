@@ -122,12 +122,6 @@ public class GameController {
 
         lock (theWorld!) {
             for (int i = 0; i < parts.Length - 1; i++) {
-                //if (parts[i].Length == 0) {
-                //    continue;
-                //}
-                //if (parts[parts.Length - 1] != "") {
-                //    break;
-                //}
 
                 // Check if the incoming object is a snake or a powerup
 
@@ -184,7 +178,7 @@ public class GameController {
 
                         
                     } catch (Exception) {
-                        Console.WriteLine("error");
+                       
                     }
                     
                 }

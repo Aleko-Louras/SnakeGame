@@ -188,11 +188,6 @@ public class GameController {
                     }
                     
                 }
-                //Console.WriteLine("The part is: ");
-                //Console.WriteLine(parts[i]);
-                //Console.WriteLine("The parts length is");
-                //Console.WriteLine(parts[i].Length);
-                //state.RemoveData(0, parts[i].Length);
             }
                 
         } 

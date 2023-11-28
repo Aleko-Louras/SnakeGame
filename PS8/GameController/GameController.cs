@@ -1,4 +1,13 @@
-﻿namespace GController;
+﻿///
+/// GameController handles moving information between the Server and the
+/// Game world.
+///
+/// Aleko Louras and Quinn Pritchett
+/// November 2023
+///
+
+
+namespace GController;
 using NetworkUtil;
 using System.Text.RegularExpressions;
 using WorldModel;
@@ -122,12 +131,6 @@ public class GameController {
 
         lock (theWorld!) {
             for (int i = 0; i < parts.Length - 1; i++) {
-                //if (parts[i].Length == 0) {
-                //    continue;
-                //}
-                //if (parts[parts.Length - 1] != "") {
-                //    break;
-                //}
 
                 // Check if the incoming object is a snake or a powerup
 
@@ -184,7 +187,7 @@ public class GameController {
 
                         
                     } catch (Exception) {
-                        Console.WriteLine("error");
+                       
                     }
                     
                 }

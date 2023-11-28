@@ -1,4 +1,11 @@
-﻿namespace SnakeGame;
+﻿///
+/// Main Page handles drawing the Main UI of the Game
+///
+/// Aleko Louras and Quinn Pritchett
+/// November 2023
+///
+
+namespace SnakeGame;
 using GController;
 
 public partial class MainPage : ContentPage

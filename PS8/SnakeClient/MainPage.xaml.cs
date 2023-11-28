@@ -90,8 +90,8 @@ public partial class MainPage : ContentPage
     }
 
     public void OnError() {
-        DisplayAlert("Network Error", "A network error occured", "OK");
-        connectButton.IsEnabled = true;
+        Dispatcher.Dispatch(() => DisplayAlert("Network Error", "A network error occured, retry connecting", "OK"));
+        Dispatcher.Dispatch(() => connectButton.IsEnabled = true);
     }
 
     private void ControlsButton_Clicked(object sender, EventArgs e)

@@ -81,6 +81,12 @@ public class WorldPanel : IDrawable
         initializedForDrawing = true;
     }
 
+    /// <summary>
+    /// The primary Draw method for theWorld objects
+    /// Called each time there are new updates from the server
+    /// </summary>
+    /// <param name="canvas"></param>
+    /// <param name="dirtyRect"></param>
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
         if ( !initializedForDrawing )
@@ -239,6 +245,11 @@ public class WorldPanel : IDrawable
         canvas.RestoreState();
     }
 
+    /// <summary>
+    /// For drawing the players name and score next to the snake
+    /// </summary>
+    /// <param name="o"></param>
+    /// <param name="canvas"></param>
     private void NameDrawer(object o, ICanvas canvas) {
         Snake s = o as Snake;
         canvas.FontColor = Colors.White;
@@ -247,6 +258,11 @@ public class WorldPanel : IDrawable
         canvas.DrawString(s.name + " " + s.score.ToString(), 20, 0, 150, 100, HorizontalAlignment.Left, VerticalAlignment.Top);
     }
 
+    /// <summary>
+    /// For drawing the walls in the specified position
+    /// </summary>
+    /// <param name="o"></param>
+    /// <param name="canvas"></param>
     private void WallDrawer(object o, ICanvas canvas) {
         canvas.DrawImage(wall,
                         -25,
@@ -255,6 +271,11 @@ public class WorldPanel : IDrawable
                         wall.Height);
     }
 
+    /// <summary>
+    /// Draws the Powerups
+    /// </summary>
+    /// <param name="o"></param>
+    /// <param name="canvas"></param>
     private void PowerupDrawer(object o, ICanvas canvas) {
         Powerup p = o as Powerup;
         int width = 15;
@@ -265,6 +286,11 @@ public class WorldPanel : IDrawable
         }
     }
 
+    /// <summary>
+    /// Draws snake segments 
+    /// </summary>
+    /// <param name="o"></param>
+    /// <param name="canvas"></param>
     private void SnakeSegmentDrawer(object o, ICanvas canvas)
     {
         int length = (int)o;
@@ -273,6 +299,11 @@ public class WorldPanel : IDrawable
 
     }
 
+    /// <summary>
+    /// Draws the game over screen and the correct, score dependent text
+    /// </summary>
+    /// <param name="o"></param>
+    /// <param name="canvas"></param>
     private void GameOverDrawer(object o, ICanvas canvas)
     {
         Snake s = o as Snake;
@@ -300,6 +331,11 @@ public class WorldPanel : IDrawable
 
     }
 
+    /// <summary>
+    /// Determines what color the snake will be 
+    /// </summary>
+    /// <param name="number"></param>
+    /// <returns></returns>
     private Color SnakeColorPicker(int number)
     {
         switch (number)

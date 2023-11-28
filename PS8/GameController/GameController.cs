@@ -32,6 +32,10 @@ public class GameController {
         return theWorld;
     }
 
+    /// <summary>
+    /// Sends movment instructions to the server
+    /// </summary>
+    /// <param name="directionText"></param>
     public void SendMovement(string directionText) {
 
         switch (directionText) {
@@ -56,12 +60,20 @@ public class GameController {
            
         }
     }
-
+    /// <summary>
+    /// Begin Connecting to Server
+    /// </summary>
+    /// <param name="serverAddress"></param>
+    /// <param name="playerName"></param>
     public void Connect(string serverAddress, string playerName) {
         Networking.ConnectToServer(OnConnect, serverAddress, 11000);
         connectedPlayer = playerName;
     }
 
+    /// <summary>
+    /// On Connection method 
+    /// </summary>
+    /// <param name="state"></param>
     private void OnConnect(SocketState state) {
 
         theServer = state;
@@ -73,6 +85,10 @@ public class GameController {
         
     }
 
+    /// <summary>
+    /// Processes recived messages and begins the event loop
+    /// </summary>
+    /// <param name="state"></param>
     private void RecieveMessage(SocketState state) {
         if (state.ErrorOccurred) {
             NetworkError.Invoke();
@@ -94,6 +110,10 @@ public class GameController {
 
     }
 
+    /// <summary>
+    /// Initial setup of the playerID, and theWorld
+    /// </summary>
+    /// <param name="state"></param>
     private void InitialSetup(SocketState state) {
 
         string totalData = state.GetData();
@@ -124,6 +144,10 @@ public class GameController {
             recievedSetup = true;
     }
 
+    /// <summary>
+    /// Updates theWorld each time new data is recieved from the server
+    /// </summary>
+    /// <param name="state"></param>
     private void UpdateFromServer(SocketState state) {
         // Parse the incoming message
         string totalData = state.GetData();
@@ -132,7 +156,8 @@ public class GameController {
         lock (theWorld!) {
             for (int i = 0; i < parts.Length - 1; i++) {
 
-                // Check if the incoming object is a snake or a powerup
+                // Check if the incoming object is a wall, snake or a powerup
+                // the deserialze as appropriate 
 
                 if (parts[i][0] == '{' && parts[i][parts[i].Length - 1] == '\n') {
                     try {
@@ -187,7 +212,7 @@ public class GameController {
 
                         
                     } catch (Exception) {
-                       
+                       // do nothing
                     }
                     
                 }

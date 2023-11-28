@@ -79,7 +79,6 @@ public partial class MainPage : ContentPage
             DisplayAlert("Error", "Name must be less than 16 characters", "OK");
             return;
         }
-        //DisplayAlert("Delete this", "Code to start the controller's connecting process goes here", "OK");
         gController.Connect(serverText.Text, nameText.Text);
         connectButton.IsEnabled = false;
         keyboardHack.Focus();
@@ -96,6 +95,9 @@ public partial class MainPage : ContentPage
         
     }
 
+    /// <summary>
+    /// Use this method as an event hander for when the newtwork state has an error
+    /// </summary>
     public void OnError() {
         Dispatcher.Dispatch(() => DisplayAlert("Network Error", "A network error occured, retry connecting", "OK"));
         Dispatcher.Dispatch(() => connectButton.IsEnabled = true);

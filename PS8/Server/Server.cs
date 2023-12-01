@@ -11,7 +11,8 @@ public class Server
     {
         // Decode the XML Settings into the World Model
         XmlSerializer xMLSerializer = new XmlSerializer(typeof(Settings));
-        using FileStream myFileStream = new FileStream("myFileName.xml", FileMode.Open);
+        using FileStream myFileStream = new FileStream("settings.xml", FileMode.Open);
+
         // Call the Deserialize method and cast to the object type.
         Settings settings = (Settings)xMLSerializer.Deserialize(myFileStream);
 

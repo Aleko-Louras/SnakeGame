@@ -1,20 +1,21 @@
 ﻿using System;
+using System.Xml.Serialization;
 namespace WorldModel
 {
+	[Serializable]
 	public class Settings
 	{
-		public int UniverseSize { get; private set; }
-		public int RespawnRate{ get; private set; }
-        public int MSPerFrame { get; private set; }
+		[XmlElement]
+		public int UniverseSize { get;  set; }
+        [XmlElement]
+        public int RespawnRate{ get;  set; }
+        [XmlElement]
+        public int MSPerFrame { get;  set; }
+        [XmlIgnore]
         public Wall[]? Walls { get; private set; }
 
         public Settings()
-		{
-			this.UniverseSize = UniverseSize;
-			this.RespawnRate = RespawnRate;
-			this.MSPerFrame = MSPerFrame;
-			this.Walls = Walls;
-
+		{ 
 		}
 	}
 }

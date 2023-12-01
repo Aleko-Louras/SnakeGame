@@ -67,4 +67,9 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\GameController\GameController.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Reference Include="NetworkController">
+	    <HintPath>..\NetworkController.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
 </Project>

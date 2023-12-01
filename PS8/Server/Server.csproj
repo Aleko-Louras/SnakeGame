@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="NetworkController">
+      <HintPath>..\NetworkController.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WorldModel\WorldModel.csproj" />
+  </ItemGroup>
 </Project>

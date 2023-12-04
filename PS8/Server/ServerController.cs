@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using NetworkUtil;
+using WorldModel;
 
 namespace Server
 {
 	public class ServerController
 	{
+		public World world = new World(0);
 		string? playerName;
 		/// <summary>
 		/// Holds the clients
@@ -37,6 +40,18 @@ namespace Server
 			}
             state.OnNetworkAction = OnReceive;
 
+			string toSend = world.playerID + "\n" + world.Size + "\n";
+
+            
+            foreach (Wall w in world.Walls.Values)
+			{
+				string ret = JsonSerializer.Serialize(w);
+				toSend = toSend + ret + "\n";
+
+            }
+			Console.WriteLine(toSend);
+
+			Networking.Send(state.TheSocket, toSend);
 			
         }
 
@@ -50,6 +65,10 @@ namespace Server
 			Console.WriteLine("Received data");
 			Networking.GetData(state);
 			Console.WriteLine(state.buffer.ToString());
+		}
+		public void setWorld(World w)
+		{
+			world = w;
 		}
 
     }

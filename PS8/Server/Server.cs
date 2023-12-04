@@ -24,11 +24,21 @@ public class Server
         Console.WriteLine(settings.MSPerFrame);
         Console.WriteLine(settings.RespawnRate);
         Console.WriteLine(settings.Walls);
-
+        
+       
         World theWorld = new World(settings.UniverseSize);
+        
         Console.WriteLine("The world size is: " + theWorld.Size);
+        foreach (Wall w in settings.Walls)
+        {
+            theWorld.Walls.Add(w.wall,w);
+            Console.WriteLine(w.wall);
+            Console.WriteLine(w.p1);
+            Console.WriteLine(w.p2);
 
+        }
         ServerController server = new ServerController();
+        server.setWorld(theWorld);
         server.StartServer();
 
         Console.WriteLine("Server running...");

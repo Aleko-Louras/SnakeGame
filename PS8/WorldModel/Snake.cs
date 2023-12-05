@@ -76,6 +76,20 @@ namespace WorldModel
 			this.join = join;
 
 		}
+
+		public Snake(int snake, string name)
+		{
+
+            this.snake = snake;
+            this.name = name;
+			this.body = new List<Vector2D>();
+			this.dir = new Vector2D(0, 1);
+			this.score = 0;
+			this.died = false;
+			this.alive = true;
+			this.dc = false;
+			this.join = true;
+        }
 	}
 }
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Net.NetworkInformation;
 using System.Runtime.Serialization;
 using System.Xml;
@@ -8,6 +9,7 @@ namespace Server;
 
 public class Server
 {
+
     public static void Main(string[] args)
     {
         // Decode the XML Settings into the World Model
@@ -42,10 +44,18 @@ public class Server
         server.StartServer();
 
         Console.WriteLine("Server running...");
-        Console.Read();
+        //Console.Read();
 
+        Stopwatch watch = new Stopwatch();
+        watch.Start();
+        while (true)
+        {
+            while (watch.ElapsedMilliseconds < settings.MSPerFrame) { }
 
+            watch.Restart();
+            server.Update();
+        }
     }
-
+    
 } 
 

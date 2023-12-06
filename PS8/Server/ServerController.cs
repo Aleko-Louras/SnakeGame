@@ -143,20 +143,27 @@ namespace Server {
         public void Update() {
             lock (clients) {
                 string toSend = "";
+
                 lock (world) {
                     foreach (Powerup p in powerupsToRemove) {
                         world.Powerups.Remove(p.power);
                     }
-                    foreach (Snake deadSnake in snakesToRemove) {
-                        world.Snakes.Remove(deadSnake.snake);
+
+                    foreach (Snake s in snakesToRemove)
+                    {
+                       
                     }
                 }
 
 
                 foreach (Snake s in world.Snakes.Values) {
-                    s.Move();
+                    if (!s.died)
+                    {
+                        s.Move();
+                    }
                     s.hitPowerup(world, powerupsToRemove);
                     s.hitWall(world, snakesToRemove);
+                    s.Respawn(world);
                     string ret = JsonSerializer.Serialize(s);
                     toSend = toSend + ret + "\n";
                     //Console.WriteLine(toSend);

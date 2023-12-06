@@ -7,13 +7,14 @@ using NetworkUtil;
 using SnakeGame;
 using WorldModel;
 
-namespace Server
-{
-	public class ServerController
-	{
+namespace Server {
+    public class ServerController {
         public World world = new World(0);
-		int playerID = -1;
-		string playerName = "";
+        int playerID = -1;
+        string playerName = "";
+
+        public static List<Powerup> powerupsToRemove = new List<Powerup>();
+        public static List<Snake> snakesToRemove = new List<Snake>();
 
 
         private Random rng = new Random();
@@ -24,57 +25,50 @@ namespace Server
         /// Value: the Socket for that client connection
         /// </summary>
         private List<Socket> clients = new List<Socket>();
-        //private Dictionary<int, Socket> clients = new Dictionary<int, Socket>();
 
-        public void StartServer()
-		{
-			Networking.StartServer(OnClientConnect, 11000);
-		}
 
-        private void OnClientConnect(SocketState state)
-		{
-			if (state.ErrorOccurred)
-			{
-				return;
-			}
+        public void StartServer() {
+            Networking.StartServer(OnClientConnect, 11000);
+        }
+
+        private void OnClientConnect(SocketState state) {
+            if (state.ErrorOccurred) {
+                return;
+            }
 
             Console.WriteLine("Contact from client");
 
-            lock (clients)
-			{
-				playerID = world.Snakes.Count;
-				Console.WriteLine("New player connected with ID: " + playerID);
-                clients.Add( state.TheSocket);
-			}
+            lock (clients) {
+                playerID = world.Snakes.Count;
+                Console.WriteLine("New player connected with ID: " + playerID);
+                clients.Add(state.TheSocket);
+            }
 
             state.OnNetworkAction = ConnectSnake;
 
-			string toSend = playerID + "\n" + world.Size + "\n";
+            string toSend = playerID + "\n" + world.Size + "\n";
 
-            
-            foreach (Wall w in world.Walls.Values)
-			{
-				string ret = JsonSerializer.Serialize(w);
-				toSend = toSend + ret + "\n";
+
+            foreach (Wall w in world.Walls.Values) {
+                string ret = JsonSerializer.Serialize(w);
+                toSend = toSend + ret + "\n";
 
             }
 
 
-			Networking.Send(state.TheSocket, toSend);
+            Networking.Send(state.TheSocket, toSend);
             Networking.GetData(state);
 
 
         }
 
-		private void ConnectSnake(SocketState state)
-		{
+        private void ConnectSnake(SocketState state) {
 
-			playerName = state.GetData();
-			Console.WriteLine(playerName);
+            playerName = state.GetData();
+            Console.WriteLine(playerName);
 
-			lock (world)
-			{
-				world.Snakes.Add(playerID, new Snake(playerID, playerName));
+            lock (world) {
+                world.Snakes.Add(playerID, new Snake(playerID, playerName));
                 Snake snake = world.Snakes[playerID];
 
                 int startingX = rng.Next(-world.Size / 2, world.Size / 2);
@@ -83,105 +77,98 @@ namespace Server
             }
 
             state.OnNetworkAction = RecieveMovements;
-			Networking.GetData(state);
+            Networking.GetData(state);
 
-		}
-		
-		
-            
+        }
 
-		/// <summary>
-		/// Handles receiving data from the client.
-		/// The only data the client should send is its name and movement commands
-		/// </summary>
-		/// <param name="state"></param>
-		private void RecieveMovements(SocketState state)
-		{
+
+
+
+        /// <summary>
+        /// Handles receiving data from the client.
+        /// The only data the client should send is its name and movement commands
+        /// </summary>
+        /// <param name="state"></param>
+        private void RecieveMovements(SocketState state) {
 
             if (state.ErrorOccurred) {
-                lock(clients) {
+                lock (clients) {
                     clients.Remove(state.TheSocket);
                 }
                 return;
             }
 
-			//Console.WriteLine("Received data");
+            //Console.WriteLine("Received data");
             string totalData = state.GetData();
             string[] parts = Regex.Split(totalData, @"(?<=[\n])");
 
-            foreach (string p in parts)
-            {
+            foreach (string p in parts) {
                 if (p.Length == 0)
                     continue;
 
-               
+
                 if (p[p.Length - 1] != '\n')
                     break;
 
-                if (p[0] == '{')
-                {
-                    lock (world)
-                    {
+                if (p[0] == '{') {
+
                         Snake sendingSnake = world.Snakes[playerID];
 
-                        if (p.Contains("up")) 
-                        {
+                        if (p.Contains("up")) {
                             sendingSnake.Turn(new Vector2D(0, -1));
-                        }
-                        else if (p.Contains("down")) 
-                        {
+                        } else if (p.Contains("down")) {
                             sendingSnake.Turn(new Vector2D(0, 1));
-                        }
-						else if (p.Contains("left")) {
+                        } else if (p.Contains("left")) {
                             sendingSnake.Turn(new Vector2D(-1, 0));
-                        }
-						else if (p.Contains("right")) 
-                        {
+                        } else if (p.Contains("right")) {
                             sendingSnake.Turn(new Vector2D(1, 0));
-                        }
-                        else { }
-                    }
+                        } else { }
                 } else {
-                    world.Snakes[playerID].name = p.Substring(0, p.Length - 1);
+                    lock (world) {
+                        world.Snakes[playerID].name = p.Substring(0, p.Length - 1);
+                    }
                 }
 
                 state.RemoveData(0, p.Length);
             }
             Networking.GetData(state);
-		}
+        }
 
-		public void Update()
-		{
-			lock (clients)
-			{
-				string toSend = "";
+        public void Update() {
+            lock (clients) {
+                string toSend = "";
 
-				foreach (Snake s in world.Snakes.Values)
-				{
+                foreach (Powerup p in powerupsToRemove) {
+                    world.Powerups.Remove(p.power);
+                }
+
+
+                foreach (Snake s in world.Snakes.Values) {
                     s.Move();
- 					string ret = JsonSerializer.Serialize(s);
-					toSend = toSend + ret + "\n";
-					//Console.WriteLine(toSend);
+                    s.hitPowerup(world, powerupsToRemove);
+                    string ret = JsonSerializer.Serialize(s);
+                    toSend = toSend + ret + "\n";
+                    //Console.WriteLine(toSend);
 
-				}
-				foreach (Powerup p in world.Powerups.Values)
-				{
-					string ret = JsonSerializer.Serialize(p);
-					toSend = toSend + ret + "\n";
-				}
-				foreach (Socket s in clients)
-				{
+                }
+
+                foreach (Powerup p in world.Powerups.Values) {
+                    string ret = JsonSerializer.Serialize(p);
+                    toSend = toSend + ret + "\n";
+                }
+
+                foreach (Socket s in clients) {
                     //Console.WriteLine(s);
-					Networking.Send(s, toSend);
-				}
-			}
-		}
+                    Networking.Send(s, toSend);
+                }
+
+            }
+        }
 
 
-		public void SetWorld(World w)
-		{
-			world = w;
-		}
+        public void SetWorld(World w) {
+            world = w;
+        }
 
     }
 }

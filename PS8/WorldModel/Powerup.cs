@@ -17,11 +17,16 @@ namespace WorldModel
 		{
 			get; private set;
 		}
+
 		//If the powerup has died.
 		public bool died
 		{
-			get; private set;
-		} // indicates if the powerup was collected on this frame
+			get;  set;
+		}
+
+		public int width = 5;
+
+
 		/// <summary>
 		/// Constructor for the powerup taking in power, location, and if its died.
 		/// </summary>

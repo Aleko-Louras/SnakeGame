@@ -44,6 +44,7 @@ namespace WorldModel
 		/// </summary>
         public bool join { get; private set; }
 
+		public int width = 10;
 		public int speed = 3;
 		public int initialLength = 120;
 		public bool isGrowing;
@@ -111,7 +112,6 @@ namespace WorldModel
             Vector2D head_difference = head - neck;
             head_difference.Normalize();
 
-            // Move the head by its velocity.
             body[body.Count - 1] = head + (head_difference * speed);
 
             // Move the tail by its velocity if the snake is not growing.
@@ -140,6 +140,26 @@ namespace WorldModel
             newHead += velocity;
             body.Add(newHead);
 
+        }
+
+		public void hitPowerup(World theWorld, List<Powerup> powerups) {
+			lock (theWorld) {
+				foreach (Powerup p in theWorld.Powerups.Values) {
+					double distance = (p.loc - body[body.Count - 1]).Length();
+					if (distance <= p.width + width) {
+						p.died = true;
+						powerups.Add(p);
+					}
+				}
+			}
+		}
+
+        public void hitWall(World theWorld) {
+            lock (theWorld) {
+                foreach (Wall w in theWorld.Walls.Values) {
+                    
+                }
+            }
         }
 
 

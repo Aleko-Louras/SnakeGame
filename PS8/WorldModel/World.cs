@@ -1,4 +1,5 @@
 ﻿namespace WorldModel;
+using SnakeGame;
 /// <summary>
 /// A class representing a world object, that is the world in our snake game.
 /// </summary>
@@ -38,6 +39,18 @@ public class World
         Snakes = new Dictionary<int, Snake>();
         Powerups = new Dictionary<int, Powerup>();
         Walls = new Dictionary<int, Wall>();
+
+        // Add the initial powerups
+        Random rng = new Random();
+        for (int i = 0; i < 20; i++) {
+            int x = rng.Next(-size / 2, size / 2);
+            int y = rng.Next(-size / 2, size / 2);
+            Vector2D v = new Vector2D(x, y);
+            Powerup p = new Powerup(i, v, false);
+            Powerups.Add(p.power, p);
+        }
+
+        rng.Next(-size / 2, size / 2);
         Size = size;
     }
 }

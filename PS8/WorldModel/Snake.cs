@@ -47,6 +47,7 @@ namespace WorldModel
 		public int speed = 6;
 		public int startingLength;
 		public bool turning;
+		public bool isGrowing;
 		/// <summary>
 		/// A constructor for a snake object setting every field to a value passed in.
 		/// </summary>
@@ -107,36 +108,38 @@ namespace WorldModel
 
         public void Turn(Vector2D dirChange)
 		{
-            Vector2D head = body[body.Count - 1];
-            Vector2D neck = body[body.Count - 2];
 
 			Vector2D velocity = dirChange * speed;
 
-			
+			// Move the tail vertex by its velocity if the snake is not growing.
+			if (!isGrowing) {
+				Vector2D tail = body[0];
+				tail += velocity;
 
-			//// Don't allow the snake to turn in on itself.
-			//if ((Math.Abs(head.X - neck.X) < 10 && Math.Abs(head.Y - neck.Y) < 10) ||
-			//	(dir.X == dirChange.X && dir.Y == dirChange.Y))
-			//{
-			//	return;
-			//}
+				// Check if the tail is at the exact position of the next turn in the body.
+				if (tail.Equals(body[1])) {
+					// Delete the old tail vertex.
+					body.RemoveAt(0);
+				} else {
+					// Update the tail vertex position.
+					body[0] = tail;
+				}
+			}
 
 			// Duplicate the snake's head and add it to the body.
 			Vector2D dupHead = new Vector2D(body[body.Count - 1].X, body[body.Count - 1].Y);
-            dupHead += velocity;
-            body.Add(dupHead);
+			dupHead += velocity;
+			body.Add(dupHead);
 
-			// Set the snake's direction to the new direction.
-			//this.dir = dirChange;
 		}
 
 		public void Move()
 		{
-            Vector2D head = body[body.Count - 1];
+			Vector2D head = body[body.Count - 1];
 			Vector2D neck = body[body.Count - 2];
 
 			Vector2D abdomen = body[1];
-            Vector2D tail = body[0];
+			Vector2D tail = body[0];
 
 
 			Vector2D head_difference = head - neck;
@@ -145,10 +148,12 @@ namespace WorldModel
 			Vector2D tail_difference = abdomen - tail;
 			tail_difference.Normalize();
 
-			body[body.Count -1 ] = head + head_difference;
+			body[body.Count - 1] = head + head_difference;
 			body[0] = tail + tail_difference;
 
-        }
-	}
+
+
+		}
+    }
 }
 

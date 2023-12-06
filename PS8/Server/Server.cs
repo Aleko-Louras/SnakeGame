@@ -38,7 +38,7 @@ public class Server
 
         }
         ServerController server = new ServerController();
-        server.setWorld(theWorld);
+        server.SetWorld(theWorld);
         server.StartServer();
 
         Console.WriteLine("Server running...");

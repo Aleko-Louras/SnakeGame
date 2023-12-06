@@ -11,12 +11,12 @@ namespace Server
 {
 	public class ServerController
 	{
-        private Random? rng;
         public World world = new World(0);
 		int playerID = -1;
-		string? playerName;
+		string playerName = "";
 
-        
+
+        private Random rng = new Random();
 
         /// <summary>
         /// Holds the clients
@@ -28,7 +28,6 @@ namespace Server
 
         public void StartServer()
 		{
-            rng = new Random();
 			Networking.StartServer(OnClientConnect, 11000);
 		}
 
@@ -48,7 +47,7 @@ namespace Server
                 clients.Add( state.TheSocket);
 			}
 
-            state.OnNetworkAction = AddNewSnake;
+            state.OnNetworkAction = ConnectSnake;
 
 			string toSend = playerID + "\n" + world.Size + "\n";
 
@@ -67,7 +66,7 @@ namespace Server
 
         }
 
-		private void AddNewSnake(SocketState state)
+		private void ConnectSnake(SocketState state)
 		{
 
 			playerName = state.GetData();
@@ -76,22 +75,20 @@ namespace Server
 			lock (world)
 			{
 				world.Snakes.Add(playerID, new Snake(playerID, playerName));
-                Snake curSnake = world.Snakes[playerID];
-                CreateSnake(curSnake);
+                Snake snake = world.Snakes[playerID];
+
+                int startingX = rng.Next(-world.Size / 2, world.Size / 2);
+                int startingY = rng.Next(-world.Size / 2, world.Size / 2);
+                snake.MakeSnake(startingX, startingY);
             }
 
-			state.OnNetworkAction = RecieveMovements;
+            state.OnNetworkAction = RecieveMovements;
 			Networking.GetData(state);
 
 		}
-		private void CreateSnake(Snake snake)
-		{
-            int x = rng!.Next(-world!.Size / 2, world.Size / 2);
-            int y = rng.Next(-world.Size / 2, world.Size / 2);
-
-            // Initialize the snake with the random values created above.
-            snake.Create(snake.speed, 120, x, y);
-        }
+		
+		
+            
 
 		/// <summary>
 		/// Handles receiving data from the client.
@@ -107,61 +104,49 @@ namespace Server
                 }
                 return;
             }
+
 			//Console.WriteLine("Received data");
             string totalData = state.GetData();
             string[] parts = Regex.Split(totalData, @"(?<=[\n])");
 
-            // For every part in the client's message...
             foreach (string p in parts)
             {
-                // Ignore empty strings added by the regex splitter
                 if (p.Length == 0)
                     continue;
 
-                // Ignore the last string if it doesn't end with a '\n'
+               
                 if (p[p.Length - 1] != '\n')
                     break;
 
-                // If the message is a movement command...
                 if (p[0] == '{')
                 {
                     lock (world)
                     {
-                        Snake thisSnake = world.Snakes[playerID];
-                        if (p.Contains("none"))
+                        Snake sendingSnake = world.Snakes[playerID];
+
+                        if (p.Contains("up")) 
                         {
-                            // Don't turn the snake
+                            sendingSnake.Turn(new Vector2D(0, -1));
                         }
-                        else if (p.Contains("up")) // Turn the snake up.
+                        else if (p.Contains("down")) 
                         {
-                            thisSnake.Turn(new Vector2D(0, -1));
-                            Console.WriteLine("client moves up");
+                            sendingSnake.Turn(new Vector2D(0, 1));
                         }
-                        else if (p.Contains("left")) // Turn the snake left.
+						else if (p.Contains("left")) {
+                            sendingSnake.Turn(new Vector2D(-1, 0));
+                        }
+						else if (p.Contains("right")) 
                         {
-                            thisSnake.Turn(new Vector2D(-1, 0));
+                            sendingSnake.Turn(new Vector2D(1, 0));
                         }
-                        else if (p.Contains("down")) // Turn the snake down.
-                        {
-                            thisSnake.Turn(new Vector2D(0, 1));
-                        }
-                        else if (p.Contains("right")) // Turn the snake right.
-                        {
-                            thisSnake.Turn(new Vector2D(1, 0));
-                        }
+                        else { }
                     }
-                }
-                else
-                {
-                    // Handle the client's message as a name.
+                } else {
                     world.Snakes[playerID].name = p.Substring(0, p.Length - 1);
                 }
 
-                // Remove the data as it has been handled by this point.
                 state.RemoveData(0, p.Length);
             }
-
-
             Networking.GetData(state);
 		}
 
@@ -169,23 +154,12 @@ namespace Server
 		{
 			lock (clients)
 			{
-				//foreach (Socket s in clients)
-				//{
-				//	if (!s.Connected)
-				//	{
-				//		//clients.Remove(s); // You can't remove from inside a foreach
-				//		Console.WriteLine("Client disconnnected");
-				//	}
-				//}
-
 				string toSend = "";
-
-
 
 				foreach (Snake s in world.Snakes.Values)
 				{
                     s.Move();
-					string ret = JsonSerializer.Serialize(s);
+ 					string ret = JsonSerializer.Serialize(s);
 					toSend = toSend + ret + "\n";
 					//Console.WriteLine(toSend);
 
@@ -201,11 +175,10 @@ namespace Server
 					Networking.Send(s, toSend);
 				}
 			}
-			//Console.WriteLine("Hello, I am one frame!");
 		}
 
 
-		public void setWorld(World w)
+		public void SetWorld(World w)
 		{
 			world = w;
 		}

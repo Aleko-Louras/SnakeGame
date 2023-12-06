@@ -46,10 +46,10 @@ public class World
             int x = rng.Next(-size / 2, size / 2);
             int y = rng.Next(-size / 2, size / 2);
             Vector2D v = new Vector2D(x, y);
-            Powerup p = new Powerup(i, v, false);
+            Powerup p = new Powerup(Powerups.Count, v, false);
             Powerups.Add(p.power, p);
         }
-
+        
         rng.Next(-size / 2, size / 2);
         Size = size;
     }

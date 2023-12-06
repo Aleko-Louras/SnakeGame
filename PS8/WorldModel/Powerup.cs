@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using SnakeGame;
 namespace WorldModel
 {
@@ -24,6 +25,9 @@ namespace WorldModel
 			get;  set;
 		}
 
+		//public int powerupCount = 20;
+		
+
 		public int width = 5;
 
 
@@ -36,6 +40,23 @@ namespace WorldModel
 		public Powerup(int power, Vector2D loc, bool died)
 		{
 			this.power = power; this.loc = loc; this.died = died;
+		}
+
+		public static void incrementPowerups(World world, Powerup oldPowerup)
+		{
+			Random rng = new Random();
+			
+			
+                int x = rng.Next(-world.Size / 2, world.Size / 2);
+                int y = rng.Next(-world.Size / 2, world.Size / 2);
+
+                Vector2D v = new Vector2D(x, y);
+
+				world.Powerups[oldPowerup.power].loc = v;
+
+				Console.WriteLine(world.Powerups.Count);
+                
+            
 		}
 	}
 }

@@ -143,16 +143,19 @@ namespace Server {
         public void Update() {
             lock (clients) {
                 string toSend = "";
-
                 lock (world) {
                     foreach (Powerup p in powerupsToRemove) {
-                        world.Powerups.Remove(p.power);
+                        //world.Powerups.Remove(p.power);
+
+                        Powerup.incrementPowerups(world, p);
+
                     }
 
                     foreach (Snake s in snakesToRemove)
                     {
                        
                     }
+                    
                 }
 
 

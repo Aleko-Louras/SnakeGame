@@ -44,10 +44,10 @@ namespace WorldModel
 		/// </summary>
         public bool join { get; private set; }
 
-		public int speed = 6;
-		public int startingLength;
-		public bool turning;
+		public int speed = 3;
+		public int initialLength = 120;
 		public bool isGrowing;
+
 		/// <summary>
 		/// A constructor for a snake object setting every field to a value passed in.
 		/// </summary>
@@ -94,66 +94,55 @@ namespace WorldModel
 			this.alive = true;
 			this.dc = false;
 			this.join = true;
-            this.turning = false;
         }
-        public void Create(int speed, int startingLength, int x, int y)
+        public void MakeSnake( int x, int y)
         {
-            this.startingLength = startingLength;
-            // Create a head and tail Vector2D and add it to the snake's body.
             Vector2D head = new Vector2D(x, y);
-            Vector2D tail = new Vector2D(x + (dir.X * startingLength), y + (dir.Y * startingLength));
+            Vector2D tail = new Vector2D(x + dir.X * initialLength, y + dir.Y * initialLength);
             this.body.Add(tail);
             this.body.Add(head);
         }
 
-        public void Turn(Vector2D dirChange)
-		{
 
-			Vector2D velocity = dirChange * speed;
+        public void Move() {
+            Vector2D head = body[body.Count - 1];
+            Vector2D neck = body[body.Count - 2];
 
-			// Move the tail vertex by its velocity if the snake is not growing.
-			if (!isGrowing) {
-				Vector2D tail = body[0];
-				tail += velocity;
+            Vector2D head_difference = head - neck;
+            head_difference.Normalize();
 
-				// Check if the tail is at the exact position of the next turn in the body.
-				if (tail.Equals(body[1])) {
-					// Delete the old tail vertex.
-					body.RemoveAt(0);
-				} else {
-					// Update the tail vertex position.
-					body[0] = tail;
-				}
-			}
+            // Move the head by its velocity.
+            body[body.Count - 1] = head + (head_difference * speed);
 
-			// Duplicate the snake's head and add it to the body.
-			Vector2D dupHead = new Vector2D(body[body.Count - 1].X, body[body.Count - 1].Y);
-			dupHead += velocity;
-			body.Add(dupHead);
+            // Move the tail by its velocity if the snake is not growing.
+            if (!isGrowing) {
+                Vector2D tail = body[0];
+                Vector2D abdomen = body[1];
 
-		}
+                if (tail.Equals(abdomen)) {
+                    body.RemoveAt(0);
+                    tail = body[0];
+                    abdomen = body[1];
+                }
+                Vector2D tail_difference = abdomen - tail;
+                tail_difference.Normalize();
 
-		public void Move()
-		{
-			Vector2D head = body[body.Count - 1];
-			Vector2D neck = body[body.Count - 2];
+                body[0] = tail + (tail_difference * speed);
+            }
+        }
 
-			Vector2D abdomen = body[1];
-			Vector2D tail = body[0];
+        public void Turn(Vector2D dirChange) {
 
+            Vector2D velocity = dirChange * speed;
 
-			Vector2D head_difference = head - neck;
-			head_difference.Normalize();
+            // Add a new vertex to the snakes body to act as the new head 
+            Vector2D newHead = new Vector2D(body[body.Count - 1].X, body[body.Count - 1].Y);
+            newHead += velocity;
+            body.Add(newHead);
 
-			Vector2D tail_difference = abdomen - tail;
-			tail_difference.Normalize();
-
-			body[body.Count - 1] = head + head_difference;
-			body[0] = tail + tail_difference;
+        }
 
 
-
-		}
     }
 }
 

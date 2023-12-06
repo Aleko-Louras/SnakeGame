@@ -14,7 +14,7 @@ namespace WorldModel
 		/// <summary>
 		/// The field for the snakes name
 		/// </summary>
-        public string name { get; private set; }
+        public string name { get; set; }
 		/// <summary>
 		/// A list of vectors representing the line segments of the snake body.
 		/// </summary>
@@ -43,6 +43,10 @@ namespace WorldModel
 		/// A bool for a snake is joined or not.
 		/// </summary>
         public bool join { get; private set; }
+
+		public int speed = 6;
+		public int startingLength;
+		public bool turning;
 		/// <summary>
 		/// A constructor for a snake object setting every field to a value passed in.
 		/// </summary>
@@ -89,6 +93,61 @@ namespace WorldModel
 			this.alive = true;
 			this.dc = false;
 			this.join = true;
+            this.turning = false;
+        }
+        public void Create(int speed, int startingLength, int x, int y)
+        {
+            this.startingLength = startingLength;
+            // Create a head and tail Vector2D and add it to the snake's body.
+            Vector2D head = new Vector2D(x, y);
+            Vector2D tail = new Vector2D(x + (dir.X * startingLength), y + (dir.Y * startingLength));
+            this.body.Add(tail);
+            this.body.Add(head);
+        }
+
+        public void Turn(Vector2D dirChange)
+		{
+            Vector2D head = body[body.Count - 1];
+            Vector2D neck = body[body.Count - 2];
+
+			Vector2D velocity = dirChange * speed;
+
+			
+
+			//// Don't allow the snake to turn in on itself.
+			//if ((Math.Abs(head.X - neck.X) < 10 && Math.Abs(head.Y - neck.Y) < 10) ||
+			//	(dir.X == dirChange.X && dir.Y == dirChange.Y))
+			//{
+			//	return;
+			//}
+
+			// Duplicate the snake's head and add it to the body.
+			Vector2D dupHead = new Vector2D(body[body.Count - 1].X, body[body.Count - 1].Y);
+            dupHead += velocity;
+            body.Add(dupHead);
+
+			// Set the snake's direction to the new direction.
+			//this.dir = dirChange;
+		}
+
+		public void Move()
+		{
+            Vector2D head = body[body.Count - 1];
+			Vector2D neck = body[body.Count - 2];
+
+			Vector2D abdomen = body[1];
+            Vector2D tail = body[0];
+
+
+			Vector2D head_difference = head - neck;
+			head_difference.Normalize();
+
+			Vector2D tail_difference = abdomen - tail;
+			tail_difference.Normalize();
+
+			body[body.Count -1 ] = head + head_difference;
+			body[0] = tail + tail_difference;
+
         }
 	}
 }

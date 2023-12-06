@@ -34,9 +34,7 @@ public class Server
         foreach (Wall w in settings.Walls)
         {
             theWorld.Walls.Add(w.wall,w);
-            Console.WriteLine(w.wall);
-            Console.WriteLine(w.p1);
-            Console.WriteLine(w.p2);
+            
 
         }
         ServerController server = new ServerController();

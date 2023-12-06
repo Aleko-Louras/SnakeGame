@@ -154,15 +154,29 @@ namespace WorldModel
 			}
 		}
 
-        public void hitWall(World theWorld) {
-            lock (theWorld) {
-                foreach (Wall w in theWorld.Walls.Values) {
-                    
-                }
-            }
-        }
+		public void hitWall(World theWorld, List<Snake> snakes) {
+			lock (theWorld) {
+				foreach (Wall w in theWorld.Walls.Values) {
+					double x1 = w.p1.X;
+					double x2 = w.p2.X;
+
+					double y1 = w.p1.Y;
+					double y2 = w.p2.Y;
+
+					double x = body[body.Count - 1].X;
+					double y = body[body.Count - 1].Y;
+
+					if ((x1 < x) && (x < x2) && (y1 > y) && (y < y2)) { 
+						died = true;
+						snakes.Add(this);
+					}
 
 
-    }
+				}
+			}
+		}
+
+
+	}
 }
 

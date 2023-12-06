@@ -82,6 +82,7 @@ namespace Server
 
 			state.OnNetworkAction = RecieveMovements;
 			Networking.GetData(state);
+
 		}
 		private void CreateSnake(Snake snake)
 		{
@@ -99,6 +100,13 @@ namespace Server
 		/// <param name="state"></param>
 		private void RecieveMovements(SocketState state)
 		{
+
+            if (state.ErrorOccurred) {
+                lock(clients) {
+                    clients.Remove(state.TheSocket);
+                }
+                return;
+            }
 			//Console.WriteLine("Received data");
             string totalData = state.GetData();
             string[] parts = Regex.Split(totalData, @"(?<=[\n])");
@@ -161,14 +169,14 @@ namespace Server
 		{
 			lock (clients)
 			{
-				foreach (Socket s in clients)
-				{
-					if (!s.Connected)
-					{
-						clients.Remove(s);
-						Console.WriteLine("Client disconnnected");
-					}
-				}
+				//foreach (Socket s in clients)
+				//{
+				//	if (!s.Connected)
+				//	{
+				//		//clients.Remove(s); // You can't remove from inside a foreach
+				//		Console.WriteLine("Client disconnnected");
+				//	}
+				//}
 
 				string toSend = "";
 

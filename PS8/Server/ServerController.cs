@@ -10,7 +10,7 @@ using WorldModel;
 namespace Server {
     public class ServerController {
         public World world = new World(0);
-        int playerID = -1;
+        //int playerID = -1;
         string playerName = "";
 
         public static List<Powerup> powerupsToRemove = new List<Powerup>();
@@ -38,15 +38,16 @@ namespace Server {
 
             Console.WriteLine("Contact from client");
 
-            lock (clients) {
-                playerID = world.Snakes.Count;
-                Console.WriteLine("New player connected with ID: " + playerID);
-                clients.Add(state.TheSocket);
-            }
+            //lock (clients) {
+            //    //playerID = world.Snakes.Count;
+            //    Console.WriteLine("New player connected with ID: " + playerID);
+                
+            //}
 
             state.OnNetworkAction = ConnectSnake;
 
-            string toSend = playerID + "\n" + world.Size + "\n";
+            string toSend = state.ID + "\n" + world.Size + "\n";
+
 
 
             foreach (Wall w in world.Walls.Values) {
@@ -57,6 +58,10 @@ namespace Server {
 
 
             Networking.Send(state.TheSocket, toSend);
+            lock (clients) {
+                clients.Add(state.TheSocket);
+            }
+
             Networking.GetData(state);
 
 
@@ -64,18 +69,19 @@ namespace Server {
 
         private void ConnectSnake(SocketState state) {
 
-            playerName = state.GetData();
+            playerName = state.GetData()[..(state.GetData().Length - 1)];
             Console.WriteLine(playerName);
 
             lock (world) {
-                world.Snakes.Add(playerID, new Snake(playerID, playerName));
-                Snake snake = world.Snakes[playerID];
+                world.Snakes.Add((int)state.ID, new Snake((int)state.ID, playerName));
+                Snake snake = world.Snakes[(int)state.ID];
 
                 int startingX = rng.Next(-world.Size / 2, world.Size / 2);
                 int startingY = rng.Next(-world.Size / 2, world.Size / 2);
                 snake.MakeSnake(startingX, startingY);
             }
 
+            state.RemoveData(0, playerName.Length + 1);
             state.OnNetworkAction = RecieveMovements;
             Networking.GetData(state);
 
@@ -112,7 +118,7 @@ namespace Server {
 
                 if (p[0] == '{') {
 
-                        Snake sendingSnake = world.Snakes[playerID];
+                        Snake sendingSnake = world.Snakes[(int)state.ID];
 
                         if (p.Contains("up")) {
                             sendingSnake.Turn(new Vector2D(0, -1));
@@ -125,7 +131,7 @@ namespace Server {
                         } else { }
                 } else {
                     lock (world) {
-                        world.Snakes[playerID].name = p.Substring(0, p.Length - 1);
+                        world.Snakes[(int)state.ID].name = p.Substring(0, p.Length - 1);
                     }
                 }
 
@@ -137,15 +143,20 @@ namespace Server {
         public void Update() {
             lock (clients) {
                 string toSend = "";
-
-                foreach (Powerup p in powerupsToRemove) {
-                    world.Powerups.Remove(p.power);
+                lock (world) {
+                    foreach (Powerup p in powerupsToRemove) {
+                        world.Powerups.Remove(p.power);
+                    }
+                    foreach (Snake deadSnake in snakesToRemove) {
+                        world.Snakes.Remove(deadSnake.snake);
+                    }
                 }
 
 
                 foreach (Snake s in world.Snakes.Values) {
                     s.Move();
                     s.hitPowerup(world, powerupsToRemove);
+                    s.hitWall(world, snakesToRemove);
                     string ret = JsonSerializer.Serialize(s);
                     toSend = toSend + ret + "\n";
                     //Console.WriteLine(toSend);

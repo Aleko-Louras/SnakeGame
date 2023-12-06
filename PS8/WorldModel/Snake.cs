@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using SnakeGame;
 namespace WorldModel
 {
@@ -26,7 +27,7 @@ namespace WorldModel
 		/// <summary>
 		/// The score of a snake.
 		/// </summary>
-        public int score { get; private set; }
+        public int score { get; set; }
 		/// <summary>
 		/// A bool if a snake has died.
 		/// </summary>
@@ -47,7 +48,7 @@ namespace WorldModel
 		public int width = 10;
 		public int speed = 3;
 		public int initialLength = 120;
-		public bool isGrowing;
+		public bool isGrowing = false;
 
 		/// <summary>
 		/// A constructor for a snake object setting every field to a value passed in.
@@ -129,6 +130,29 @@ namespace WorldModel
 
                 body[0] = tail + (tail_difference * speed);
             }
+			else
+			{
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+                    while (watch.ElapsedMilliseconds < 24*34) { }
+
+                    //watch.Restart();
+                    Vector2D tail = body[0];
+                    Vector2D abdomen = body[1];
+
+                    if (tail.Equals(abdomen))
+                    {
+                        body.RemoveAt(0);
+                        tail = body[0];
+                        abdomen = body[1];
+                    }
+                    Vector2D tail_difference = abdomen - tail;
+                    tail_difference.Normalize();
+
+                    body[0] = tail + (tail_difference * speed);
+					isGrowing = false;
+                
+            }
         }
 
         public void Turn(Vector2D dirChange) {
@@ -149,6 +173,8 @@ namespace WorldModel
 					if (distance <= p.width + width) {
 						p.died = true;
 						powerups.Add(p);
+						this.isGrowing = true;
+						this.score++;
 					}
 				}
 			}

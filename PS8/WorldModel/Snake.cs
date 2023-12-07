@@ -221,41 +221,58 @@ namespace WorldModel
         {
             for (int s = 0; s < theWorld.Snakes.Values.Count; s++)
             {
+                if (this.snake == s)
+                {
+                    s++;
+                }
                 double snakeX = theWorld.Snakes[s].body[^1].X;
                 double snakeY = theWorld.Snakes[s].body[^1].Y;
-
+                
                 for (int i = 0; i < theWorld.Snakes[s].body.Count - 1; i++) {
-
+                    
                     double TailX = theWorld.Snakes[s].body[i].X;//x1
                     double TailY = theWorld.Snakes[s].body[i].Y;//y1
                     double HeadX = theWorld.Snakes[s].body[i + 1].X;//x2
                     double HeadY = theWorld.Snakes[s].body[i + 1].Y;//y2
 
-                    if (TailX == HeadX) {
+                    if (TailX == HeadX)
+                    {
                         // First coordinate above second, draw going down y axis, with p1 on top
-                        if (TailY > HeadY) {
-                            if ((TailX < snakeX) && (snakeX < TailX) && (snakeY < TailY) && (snakeY > HeadY)) {
+                        if (TailY > HeadY)
+                        {
+                            if ((snakeX < TailX + 5) && (snakeX > TailX - 5) && (snakeY < TailY + 5) && (snakeY > HeadY - 5))
+                            {
                                 died = true;
                                 deadSnakes.Add(this);
                             }
-                        } else // Second coordinate abvove second, draw going down y axis with p2 on top
-                          {
-                            if ((HeadX < snakeX) && (snakeX < HeadX) && (snakeY > TailY) && (snakeY < HeadY)) {
+                        }
+                        else // Second coordinate abvove second, draw going down y axis with p2 on top
+                        {
+                            if ((snakeX < HeadX + 5) && (snakeX > HeadX - 5) && (snakeY < HeadY + 5) && (snakeY > TailY - 5))
+                            {
                                 died = true;
                                 deadSnakes.Add(this);
                             }
                         }
                     }
-                    // Horiontal Wall Case, the Y coords are equal compare the X
-                    else if (TailY == HeadY) {
+                    //Horiontal Wall Case, the Y coords are equal compare the X
+                    else if (TailY == HeadY)
+                    {
                         // First coordinate before second coordinate
-                        if (HeadX > TailX) {
-                            if ((snakeX > TailX) && (snakeX < HeadX ) && (snakeY > TailY) && (snakeY < TailY)) {
+                        if (HeadX > TailX)
+                        {
+                            if ((snakeX > TailX-5) && (snakeX < HeadX+5) && (snakeY > TailY -5) && (snakeY < TailY+5))
+                            {
                                 died = true;
+                                deadSnakes.Add(this);
                             }
-                        } else {
-                            if ((snakeX > HeadX ) && (snakeX < TailX ) && (snakeY > TailY) && (snakeY < TailY)) {
+                        }
+                        else
+                        {
+                            if ((snakeX > HeadX-5) && (snakeX < TailX +5) && (snakeY > TailY-5) && (snakeY < TailY+5))
+                            {
                                 died = true;
+                                deadSnakes.Add(this);
                             }
                         }
                     }

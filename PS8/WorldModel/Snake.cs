@@ -156,12 +156,47 @@ namespace WorldModel
         public void Turn(Vector2D dirChange)
         {
 
-            Vector2D velocity = dirChange * speed;
+            Vector2D left = new Vector2D(-1,0);
+            Vector2D right = new Vector2D(1, 0);
+            Vector2D up = new Vector2D(0,1);
+            Vector2D down = new Vector2D(0, -1);
+            if (dir.Equals(dirChange))
+            {
+                return;
+            }
+            if (dir.Equals(up) && dirChange.Equals(down))
+            {
+                return;
+            }
+            if (dir.Equals(down) && dirChange.Equals(up))
+            {
+                return;
+            }
+            if (dir.Equals(right) & dirChange.Equals(left))
+            {
+                return;
+            }
+            if (dir.Equals(left) && dirChange.Equals(right))
+            {
+                return;
+            }
 
+
+            Vector2D velocity = dirChange * speed;
+            if (dir.Equals(dirChange))
+            {
+                return;
+            }
+            else
+            {
+                Vector2D newHead = new Vector2D(body[body.Count - 1].X, body[body.Count - 1].Y);
+                newHead += velocity;
+                body.Add(newHead);
+                dir = dirChange;
+            }
             // Add a new vertex to the snakes body to act as the new head 
-            Vector2D newHead = new Vector2D(body[body.Count - 1].X, body[body.Count - 1].Y);
-            newHead += velocity;
-            body.Add(newHead);
+            
+            
 
         }
 

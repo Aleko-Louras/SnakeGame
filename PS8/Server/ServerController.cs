@@ -161,6 +161,7 @@ namespace Server {
                     s.hitSnake(world, snakesToRemove);
                     s.hitPowerup(world, powerupsToRemove);
                     s.hitWall(world, snakesToRemove);
+                    s.PlayerHitSelf(world, snakesToRemove);
                     s.Respawn(world);
                     string ret = JsonSerializer.Serialize(s);
                     toSend = toSend + ret + "\n";

@@ -120,9 +120,9 @@ namespace WorldModel
             body[body.Count - 1] = head + (head_difference * speed);
 
             // While the snake is now growing we can update the tail
-            if  (!isGrowing)
+            if (!isGrowing)
             {
-                
+
 
                 Vector2D tail = body[0];
                 Vector2D abdomen = body[1];
@@ -149,16 +149,16 @@ namespace WorldModel
 
             }
 
-            
+
         }
 
 
         public void Turn(Vector2D dirChange)
         {
 
-            Vector2D left = new Vector2D(-1,0);
+            Vector2D left = new Vector2D(-1, 0);
             Vector2D right = new Vector2D(1, 0);
-            Vector2D up = new Vector2D(0,1);
+            Vector2D up = new Vector2D(0, 1);
             Vector2D down = new Vector2D(0, -1);
             if (dir.Equals(dirChange))
             {
@@ -195,8 +195,8 @@ namespace WorldModel
                 dir = dirChange;
             }
             // Add a new vertex to the snakes body to act as the new head 
-            
-            
+
+
 
         }
 
@@ -217,19 +217,81 @@ namespace WorldModel
                 }
             }
         }
+        public void PlayerHitSelf(World theWorld, List<Snake> deadSnakes)
+        {
+            double snakeX = this.body[^1].X;
+            double snakeY = this.body[^1].Y;
+
+            for (int i = 0 ; i < this.body.Count - 2; i++)
+            {
+                //if (body.Count < 2)
+                //{
+                //    return;
+                //}
+                double TailX = this.body[i].X;//x1
+                double TailY = this.body[i].Y;//y1
+                double HeadX = this.body[i + 1].X;//x2
+                double HeadY = this.body[i + 1].Y;//y
+
+                if (TailX == HeadX)
+                {
+                    // First coordinate above second, draw going down y axis, with p1 on top
+                    if (TailY > HeadY)
+                    {
+                        if ((snakeX < TailX + 5) && (snakeX > TailX - 5) && (snakeY < TailY + 5) && (snakeY > HeadY - 5))
+                        {
+                            died = true;
+                            deadSnakes.Add(this);
+                        }
+                    }
+                    else // Second coordinate abvove second, draw going down y axis with p2 on top
+                    {
+                        if ((snakeX < HeadX + 5) && (snakeX > HeadX - 5) && (snakeY < HeadY + 5) && (snakeY > TailY - 5))
+                        {
+                            died = true;
+                            deadSnakes.Add(this);
+                        }
+                    }
+                }
+                //Horiontal Wall Case, the Y coords are equal compare the X
+                else if (TailY == HeadY)
+                {
+                    // First coordinate before second coordinate
+                    if (HeadX > TailX)
+                    {
+                        if ((snakeX > TailX - 5) && (snakeX < HeadX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
+                        {
+                            died = true;
+                            deadSnakes.Add(this);
+                        }
+                    }
+                    else
+                    {
+                        if ((snakeX > HeadX - 5) && (snakeX < TailX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
+                        {
+                            died = true;
+                            deadSnakes.Add(this);
+                        }
+                    }
+                }
+            }
+        }
+
+
         public void hitSnake(World theWorld, List<Snake> deadSnakes)
         {
             for (int s = 0; s < theWorld.Snakes.Values.Count; s++)
             {
-                if (this.snake == s)
-                {
-                    s++;
-                }
+
                 double snakeX = theWorld.Snakes[s].body[^1].X;
                 double snakeY = theWorld.Snakes[s].body[^1].Y;
-                
-                for (int i = 0; i < theWorld.Snakes[s].body.Count - 1; i++) {
-                    
+                if (this.snake == s)
+                {
+                    continue;
+                }
+                for (int i = 0; i < theWorld.Snakes[s].body.Count - 1; i++)
+                {
+
                     double TailX = theWorld.Snakes[s].body[i].X;//x1
                     double TailY = theWorld.Snakes[s].body[i].Y;//y1
                     double HeadX = theWorld.Snakes[s].body[i + 1].X;//x2
@@ -261,7 +323,7 @@ namespace WorldModel
                         // First coordinate before second coordinate
                         if (HeadX > TailX)
                         {
-                            if ((snakeX > TailX-5) && (snakeX < HeadX+5) && (snakeY > TailY -5) && (snakeY < TailY+5))
+                            if ((snakeX > TailX - 5) && (snakeX < HeadX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                             {
                                 died = true;
                                 deadSnakes.Add(this);
@@ -269,7 +331,7 @@ namespace WorldModel
                         }
                         else
                         {
-                            if ((snakeX > HeadX-5) && (snakeX < TailX +5) && (snakeY > TailY-5) && (snakeY < TailY+5))
+                            if ((snakeX > HeadX - 5) && (snakeX < TailX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                             {
                                 died = true;
                                 deadSnakes.Add(this);
@@ -304,7 +366,7 @@ namespace WorldModel
                         // First coordinate above second, draw going down y axis, with p1 on top
                         if (y1 > y2)
                         {
-                            if ((x1 -25 < x) && (x < x1 + 25 ) && (y < y1) && (y > y2))
+                            if ((x1 - 25 < x) && (x < x1 + 25) && (y < y1) && (y > y2))
                             {
                                 died = true;
                                 deadSnakes.Add(this);
@@ -330,7 +392,7 @@ namespace WorldModel
                         // First coordinate before second coordinate
                         if (x2 > x1)
                         {
-                            if ((x > x1 -25) && (x < x2 + 25) && (y > y1 - 25) && (y < y1 + 25))
+                            if ((x > x1 - 25) && (x < x2 + 25) && (y > y1 - 25) && (y < y1 + 25))
                             {
                                 died = true;
                                 deadSnakes.Add(this);
@@ -381,7 +443,7 @@ namespace WorldModel
                 died = false;
                 score = 0;
             }
-                
+
         }
 
 

@@ -3,13 +3,15 @@ using System.Drawing;
 using SnakeGame;
 namespace WorldModel
 {
+	
 	/// <summary>
 	/// The powerup class represents a Powerup object in our snake game.
 	/// </summary>
 	public class Powerup
 	{
-		//Power ups unique power level id.
-		public int power
+        public static int powerupCounter = 75;
+        //Power ups unique power level id.
+        public int power
 		{
 			get; private set;
 		}
@@ -44,17 +46,26 @@ namespace WorldModel
 
 		public static void movePowerup(World world, Powerup oldPowerup)
 		{
-			if (oldPowerup.died) {
-				oldPowerup.died = false;
-				Random rng = new Random();
-				int x = rng.Next(-world.Size / 2, world.Size / 2);
-				int y = rng.Next(-world.Size / 2, world.Size / 2);
-
-				Vector2D v = new Vector2D(x, y);
-				world.Powerups[oldPowerup.power].died = false;
-				world.Powerups[oldPowerup.power].loc = v;
+            Random rng = new Random();
+            powerupCounter--;
+			if (powerupCounter == 0)
+			{
+				powerupCounter = rng.Next(75);
 			}
-			
+			else
+			{
+				if (oldPowerup.died)
+				{
+					oldPowerup.died = false;
+					
+					int x = rng.Next(-world.Size / 2, world.Size / 2);
+					int y = rng.Next(-world.Size / 2, world.Size / 2);
+
+					Vector2D v = new Vector2D(x, y);
+					world.Powerups[oldPowerup.power].died = false;
+					world.Powerups[oldPowerup.power].loc = v;
+				}
+			}
                 
             
 		}

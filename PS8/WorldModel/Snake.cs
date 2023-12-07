@@ -50,6 +50,7 @@ namespace WorldModel
         public int initialLength = 120;
         public bool isGrowing = false;
         public int growCounter = 24;
+
         public int respawnCounter = 100;
 
 
@@ -100,16 +101,23 @@ namespace WorldModel
             this.dc = false;
             this.join = true;
         }
-        public void MakeSnake(int x, int y)
+        public void MakeSnake(int x, int y, World world)
         {
+            respawnCounter = world.RespawnRate;
             Vector2D head = new Vector2D(x, y);
             Vector2D tail = new Vector2D(x + dir.X * initialLength, y + dir.Y * initialLength);
 
-            
-
-            
             this.body.Add(tail);
             this.body.Add(head);
+
+            while (hitWall(world) || hitSnake(world)) {
+                body.Clear();
+                head = new Vector2D(x, y);
+                tail = new Vector2D(x + dir.X * initialLength, y + dir.Y * initialLength);
+
+                this.body.Add(tail);
+                this.body.Add(head);
+            }
         }
 
 
@@ -282,13 +290,10 @@ namespace WorldModel
         }
 
 
-        public void hitSnake(World theWorld)
+        public bool hitSnake(World theWorld)
         {
             for (int s = 0; s < theWorld.Snakes.Values.Count; s++)
             {
-
-
-                
                 if (this.snake == s)
                 {
                     continue;
@@ -312,6 +317,7 @@ namespace WorldModel
                             if ((snakeX < TailX + 5) && (snakeX > TailX - 5) && (snakeY < TailY + 5) && (snakeY > HeadY - 5))
                             {
                                 died = true;
+                                return true;
                                
                             }
                         }
@@ -320,7 +326,8 @@ namespace WorldModel
                             if ((snakeX < HeadX + 5) && (snakeX > HeadX - 5) && (snakeY < HeadY + 5) && (snakeY > TailY - 5))
                             {
                                 died = true;
-                               
+                                return true;
+
                             }
                         }
                     }
@@ -333,7 +340,8 @@ namespace WorldModel
                             if ((snakeX > TailX - 5) && (snakeX < HeadX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                             {
                                 died = true;
-                               
+                                return true;
+
                             }
                         }
                         else
@@ -341,16 +349,18 @@ namespace WorldModel
                             if ((snakeX > HeadX - 5) && (snakeX < TailX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                             {
                                 died = true;
-                               
+                                return true;
+
                             }
                         }
                     }
                 }
 
             }
+            return false;
         }
 
-        public void hitWall(World theWorld)
+        public bool hitWall(World theWorld)
         {
             lock (theWorld)
             {
@@ -376,6 +386,7 @@ namespace WorldModel
                             if ((x1 - 25 < x) && (x < x1 + 25) && (y < y1) && (y > y2))
                             {
                                 died = true;
+                                return true;
                                 
                             }
 
@@ -385,7 +396,8 @@ namespace WorldModel
                             if ((x2 - 25 < x) && (x < x2 + 25) && (y > y1) && (y < y2))
                             {
                                 died = true;
-                               
+                                return true;
+
                             }
 
 
@@ -402,7 +414,8 @@ namespace WorldModel
                             if ((x > x1 - 25) && (x < x2 + 25) && (y > y1 - 25) && (y < y1 + 25))
                             {
                                 died = true;
-                                
+                                return true;
+
                             }
 
 
@@ -412,15 +425,16 @@ namespace WorldModel
                             if ((x > x2 - 25) && (x < x1 + 25) && (y > y1 - 25) && (y < y1 + 25))
                             {
                                 died = true;
-                                
+                                return true;
+
 
                             }
 
                         }
 
-
                     }
                 }
+                return false;
             }
         }
 
@@ -434,7 +448,7 @@ namespace WorldModel
             respawnCounter--;
             if (respawnCounter == 0)
             {
-                respawnCounter = 100;
+                respawnCounter = world.RespawnRate;
                 Random rng = new Random();
 
                 int x = rng.Next(-world.Size / 2, world.Size / 2);

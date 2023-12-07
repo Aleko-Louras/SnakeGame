@@ -29,16 +29,22 @@ public class World
         //get; private set;
         get; set;
     }
+
+    public int RespawnRate {
+        get; private set;
+    }
+
     /// <summary>
     /// A constructor for the world object initializing the dictionaries and setting the size
     /// to the passed in values.
     /// </summary>
     /// <param name="size"></param>
-    public World(int size)
+    public World(int size, int respawnRate)
     {
         Snakes = new Dictionary<int, Snake>();
         Powerups = new Dictionary<int, Powerup>();
         Walls = new Dictionary<int, Wall>();
+        RespawnRate = respawnRate;
 
         // Add the initial powerups
         Random rng = new Random();

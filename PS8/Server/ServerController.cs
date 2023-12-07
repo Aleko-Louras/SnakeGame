@@ -9,7 +9,7 @@ using WorldModel;
 
 namespace Server {
     public class ServerController {
-        public World world = new World(0);
+        public World world = new World(0, 100);
         //int playerID = -1;
         string playerName = "";
 
@@ -78,7 +78,7 @@ namespace Server {
 
                 int startingX = rng.Next(-world.Size / 2, world.Size / 2);
                 int startingY = rng.Next(-world.Size / 2, world.Size / 2);
-                snake.MakeSnake(startingX, startingY);
+                snake.MakeSnake(startingX, startingY, world);
             }
 
             state.RemoveData(0, playerName.Length + 1);
@@ -152,32 +152,31 @@ namespace Server {
                     
                 }
 
+                    foreach (Snake s in world.Snakes.Values) {
+                        if (!s.died) {
+                            s.Move();
+                        }
+                        s.hitSnake(world);
+                        s.hitPowerup(world, powerupsToRemove);
+                        s.hitWall(world);
+                        s.PlayerHitSelf(world);
+                        s.Respawn(world);
+                        string ret = JsonSerializer.Serialize(s);
+                        toSend = toSend + ret + "\n";
+                        //Console.WriteLine(toSend);
 
-                foreach (Snake s in world.Snakes.Values) {
-                    if (!s.died)
-                    {
-                        s.Move();
                     }
-                    s.hitSnake(world);
-                    s.hitPowerup(world, powerupsToRemove);
-                    s.hitWall(world);
-                    s.PlayerHitSelf(world);
-                    s.Respawn(world);
-                    string ret = JsonSerializer.Serialize(s);
-                    toSend = toSend + ret + "\n";
-                    //Console.WriteLine(toSend);
 
-                }
+                    foreach (Powerup p in world.Powerups.Values) {
+                        string ret = JsonSerializer.Serialize(p);
+                        toSend = toSend + ret + "\n";
+                    }
 
-                foreach (Powerup p in world.Powerups.Values) {
-                    string ret = JsonSerializer.Serialize(p);
-                    toSend = toSend + ret + "\n";
-                }
-
-                foreach (Socket s in clients) {
-                    //Console.WriteLine(s);
-                    Networking.Send(s, toSend);
-                }
+                    foreach (Socket s in clients) {
+                        //Console.WriteLine(s);
+                        Networking.Send(s, toSend);
+                    }
+                
 
             }
         }

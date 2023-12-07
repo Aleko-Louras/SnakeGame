@@ -28,7 +28,7 @@ public class Server
         Console.WriteLine(settings.Walls);
         
        
-        World theWorld = new World(settings.UniverseSize);
+        World theWorld = new World(settings.UniverseSize, settings.RespawnRate);
         
         Console.WriteLine("The world size is: " + theWorld.Size);
         foreach (Wall w in settings.Walls)

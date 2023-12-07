@@ -219,57 +219,48 @@ namespace WorldModel
         }
         public void hitSnake(World theWorld, List<Snake> deadSnakes)
         {
-            for(int s = 0; s < theWorld.Snakes.Values.Count; s++)
+            for (int s = 0; s < theWorld.Snakes.Values.Count; s++)
             {
                 double snakeX = theWorld.Snakes[s].body[^1].X;
                 double snakeY = theWorld.Snakes[s].body[^1].Y;
-                for (int i =0; i < theWorld.Snakes[s].body.Count; i++)
-                {
+
+                for (int i = 0; i < theWorld.Snakes[s].body.Count - 1; i++) {
+
                     double TailX = theWorld.Snakes[s].body[i].X;//x1
                     double TailY = theWorld.Snakes[s].body[i].Y;//y1
-                    double HeadX = theWorld.Snakes[s].body[i+1].X;//x2
-                    double HeadY = theWorld.Snakes[s].body[i+1].Y;//y2
-                    if (TailX == HeadX)
-                    {
+                    double HeadX = theWorld.Snakes[s].body[i + 1].X;//x2
+                    double HeadY = theWorld.Snakes[s].body[i + 1].Y;//y2
+
+                    if (TailX == HeadX) {
                         // First coordinate above second, draw going down y axis, with p1 on top
-                        if (TailY > HeadY)
-                        {
-                            if ((TailX  < snakeX) && (snakeX < TailX ) && (snakeY < TailY) && (snakeY > HeadY))
-                            {
+                        if (TailY > HeadY) {
+                            if ((TailX < snakeX) && (snakeX < TailX) && (snakeY < TailY) && (snakeY > HeadY)) {
                                 died = true;
                                 deadSnakes.Add(this);
                             }
-                        }
-                        else // Second coordinate abvove second, draw going down y axis with p2 on top
-                        {
-                            if ((HeadX - 25 < snakeX) && (snakeX < x2 + 25) && (snakeY > y1) && (y < y2))
-                            {
+                        } else // Second coordinate abvove second, draw going down y axis with p2 on top
+                          {
+                            if ((HeadX < snakeX) && (snakeX < HeadX) && (snakeY > TailY) && (snakeY < HeadY)) {
                                 died = true;
                                 deadSnakes.Add(this);
                             }
                         }
                     }
                     // Horiontal Wall Case, the Y coords are equal compare the X
-                    else if (y1 == y2)
-                    {
+                    else if (TailY == HeadY) {
                         // First coordinate before second coordinate
-                        if (x2 > TailX)
-                        {
-                            if ((snakeX > TailX - 25) && (snakeX < x2 + 25) && (y > y1 - 25) && (y < y1 + 25))
-                            {
+                        if (HeadX > TailX) {
+                            if ((snakeX > TailX) && (snakeX < HeadX ) && (snakeY > TailY) && (snakeY < TailY)) {
                                 died = true;
                             }
-                        }
-                        else
-                        {
-                            if ((snakeX > x2 - 25) && (snakeX < TailX + 25) && (y > y1 - 25) && (y < y1 + 25))
-                            {
+                        } else {
+                            if ((snakeX > HeadX ) && (snakeX < TailX ) && (snakeY > TailY) && (snakeY < TailY)) {
                                 died = true;
                             }
                         }
                     }
                 }
-                
+
             }
         }
 
@@ -325,6 +316,7 @@ namespace WorldModel
                             if ((x > x1 -25) && (x < x2 + 25) && (y > y1 - 25) && (y < y1 + 25))
                             {
                                 died = true;
+                                deadSnakes.Add(this);
                             }
 
 
@@ -334,7 +326,8 @@ namespace WorldModel
                             if ((x > x2 - 25) && (x < x1 + 25) && (y > y1 - 25) && (y < y1 + 25))
                             {
                                 died = true;
-                                
+                                deadSnakes.Add(this);
+
                             }
 
                         }

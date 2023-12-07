@@ -73,7 +73,7 @@ namespace Server {
             Console.WriteLine(playerName);
 
             lock (world) {
-                world.Snakes.Add((int)state.ID, new Snake((int)state.ID, playerName));
+                world.Snakes.Add((int)state.ID, new Snake((int)state.ID, playerName));   
                 Snake snake = world.Snakes[(int)state.ID];
 
                 int startingX = rng.Next(-world.Size / 2, world.Size / 2);

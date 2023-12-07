@@ -217,7 +217,21 @@ namespace WorldModel
                 }
             }
         }
-
+        public void hitSnake(World theWorld, List<Snake> deadSnakes)
+        {
+            for(int s = 0; s < theWorld.Snakes.Values.Count; s++)
+            {
+                Vector2D head = theWorld.Snakes[s].body[^1];
+                for(int i =0; i < theWorld.Snakes[s].body.Count; i++)
+                {
+                    double TailX = theWorld.Snakes[s].body[i].X;
+                    double TailY = theWorld.Snakes[s].body[i].Y;
+                    double HeadX = theWorld.Snakes[s].body[i+1].X;
+                    double HeadY = theWorld.Snakes[s].body[i+1].Y;
+                }
+                
+            }
+        }
 
         public void hitWall(World theWorld, List<Snake> deadSnakes)
         {

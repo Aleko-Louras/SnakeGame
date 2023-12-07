@@ -14,7 +14,7 @@ namespace Server {
         string playerName = "";
 
         public static List<Powerup> powerupsToRemove = new List<Powerup>();
-        public static List<Snake> snakesToRemove = new List<Snake>();
+        //public static List<Snake> snakesToRemove = new List<Snake>();
 
 
         private Random rng = new Random();
@@ -158,10 +158,10 @@ namespace Server {
                     {
                         s.Move();
                     }
-                    s.hitSnake(world, snakesToRemove);
+                    s.hitSnake(world);
                     s.hitPowerup(world, powerupsToRemove);
-                    s.hitWall(world, snakesToRemove);
-                    s.PlayerHitSelf(world, snakesToRemove);
+                    s.hitWall(world);
+                    s.PlayerHitSelf(world);
                     s.Respawn(world);
                     string ret = JsonSerializer.Serialize(s);
                     toSend = toSend + ret + "\n";

@@ -104,6 +104,10 @@ namespace WorldModel
         {
             Vector2D head = new Vector2D(x, y);
             Vector2D tail = new Vector2D(x + dir.X * initialLength, y + dir.Y * initialLength);
+
+            
+
+            
             this.body.Add(tail);
             this.body.Add(head);
         }
@@ -217,7 +221,7 @@ namespace WorldModel
                 }
             }
         }
-        public void PlayerHitSelf(World theWorld, List<Snake> deadSnakes)
+        public void PlayerHitSelf(World theWorld)
         {
             double snakeX = this.body[^1].X;
             double snakeY = this.body[^1].Y;
@@ -241,7 +245,7 @@ namespace WorldModel
                         if ((snakeX < TailX + 5) && (snakeX > TailX - 5) && (snakeY < TailY + 5) && (snakeY > HeadY - 5))
                         {
                             died = true;
-                            deadSnakes.Add(this);
+                            
                         }
                     }
                     else // Second coordinate abvove second, draw going down y axis with p2 on top
@@ -249,7 +253,7 @@ namespace WorldModel
                         if ((snakeX < HeadX + 5) && (snakeX > HeadX - 5) && (snakeY < HeadY + 5) && (snakeY > TailY - 5))
                         {
                             died = true;
-                            deadSnakes.Add(this);
+                            
                         }
                     }
                 }
@@ -262,7 +266,7 @@ namespace WorldModel
                         if ((snakeX > TailX - 5) && (snakeX < HeadX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                         {
                             died = true;
-                            deadSnakes.Add(this);
+                            
                         }
                     }
                     else
@@ -270,7 +274,7 @@ namespace WorldModel
                         if ((snakeX > HeadX - 5) && (snakeX < TailX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                         {
                             died = true;
-                            deadSnakes.Add(this);
+                           
                         }
                     }
                 }
@@ -278,7 +282,7 @@ namespace WorldModel
         }
 
 
-        public void hitSnake(World theWorld, List<Snake> deadSnakes)
+        public void hitSnake(World theWorld)
         {
             for (int s = 0; s < theWorld.Snakes.Values.Count; s++)
             {
@@ -308,7 +312,7 @@ namespace WorldModel
                             if ((snakeX < TailX + 5) && (snakeX > TailX - 5) && (snakeY < TailY + 5) && (snakeY > HeadY - 5))
                             {
                                 died = true;
-                                deadSnakes.Add(this);
+                               
                             }
                         }
                         else // Second coordinate abvove second, draw going down y axis with p2 on top
@@ -316,7 +320,7 @@ namespace WorldModel
                             if ((snakeX < HeadX + 5) && (snakeX > HeadX - 5) && (snakeY < HeadY + 5) && (snakeY > TailY - 5))
                             {
                                 died = true;
-                                deadSnakes.Add(this);
+                               
                             }
                         }
                     }
@@ -329,7 +333,7 @@ namespace WorldModel
                             if ((snakeX > TailX - 5) && (snakeX < HeadX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                             {
                                 died = true;
-                                deadSnakes.Add(this);
+                               
                             }
                         }
                         else
@@ -337,7 +341,7 @@ namespace WorldModel
                             if ((snakeX > HeadX - 5) && (snakeX < TailX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                             {
                                 died = true;
-                                deadSnakes.Add(this);
+                               
                             }
                         }
                     }
@@ -346,7 +350,7 @@ namespace WorldModel
             }
         }
 
-        public void hitWall(World theWorld, List<Snake> deadSnakes)
+        public void hitWall(World theWorld)
         {
             lock (theWorld)
             {
@@ -372,7 +376,7 @@ namespace WorldModel
                             if ((x1 - 25 < x) && (x < x1 + 25) && (y < y1) && (y > y2))
                             {
                                 died = true;
-                                deadSnakes.Add(this);
+                                
                             }
 
                         }
@@ -381,7 +385,7 @@ namespace WorldModel
                             if ((x2 - 25 < x) && (x < x2 + 25) && (y > y1) && (y < y2))
                             {
                                 died = true;
-                                deadSnakes.Add(this);
+                               
                             }
 
 
@@ -398,7 +402,7 @@ namespace WorldModel
                             if ((x > x1 - 25) && (x < x2 + 25) && (y > y1 - 25) && (y < y1 + 25))
                             {
                                 died = true;
-                                deadSnakes.Add(this);
+                                
                             }
 
 
@@ -408,7 +412,7 @@ namespace WorldModel
                             if ((x > x2 - 25) && (x < x1 + 25) && (y > y1 - 25) && (y < y1 + 25))
                             {
                                 died = true;
-                                deadSnakes.Add(this);
+                                
 
                             }
 

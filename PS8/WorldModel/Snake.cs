@@ -283,14 +283,18 @@ namespace WorldModel
             for (int s = 0; s < theWorld.Snakes.Values.Count; s++)
             {
 
-                double snakeX = theWorld.Snakes[s].body[^1].X;
-                double snakeY = theWorld.Snakes[s].body[^1].Y;
+
+                
                 if (this.snake == s)
                 {
                     continue;
                 }
-                for (int i = 0; i < theWorld.Snakes[s].body.Count - 1; i++)
-                {
+                
+                double snakeX = this.body[^1].X;
+                double snakeY = this.body[^1].Y;
+                
+                for (int i = 0; i < theWorld.Snakes[s].body.Count - 1; i++) {
+                    
 
                     double TailX = theWorld.Snakes[s].body[i].X;//x1
                     double TailY = theWorld.Snakes[s].body[i].Y;//y1
@@ -299,7 +303,6 @@ namespace WorldModel
 
                     if (TailX == HeadX)
                     {
-                        // First coordinate above second, draw going down y axis, with p1 on top
                         if (TailY > HeadY)
                         {
                             if ((snakeX < TailX + 5) && (snakeX > TailX - 5) && (snakeY < TailY + 5) && (snakeY > HeadY - 5))

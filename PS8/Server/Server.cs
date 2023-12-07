@@ -18,7 +18,7 @@ public class Server
         FileStream fs = new FileStream(relativePath, FileMode.Open);
         XmlDictionaryReader reader =
                 XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
-        
+
         GameSettings settings = (GameSettings)ser.ReadObject(reader, true)!;
         reader.Close();
         fs.Close();
@@ -26,15 +26,15 @@ public class Server
         Console.WriteLine(settings.MSPerFrame);
         Console.WriteLine(settings.RespawnRate);
         Console.WriteLine(settings.Walls);
-        
-       
+
+
         World theWorld = new World(settings.UniverseSize, settings.RespawnRate);
-        
+
         Console.WriteLine("The world size is: " + theWorld.Size);
         foreach (Wall w in settings.Walls)
         {
-            theWorld.Walls.Add(w.wall,w);
-            
+            theWorld.Walls.Add(w.wall, w);
+
 
         }
         ServerController server = new ServerController();
@@ -54,6 +54,6 @@ public class Server
             server.Update();
         }
     }
-    
-} 
+
+}
 

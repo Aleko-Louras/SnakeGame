@@ -110,7 +110,8 @@ namespace WorldModel
             this.body.Add(tail);
             this.body.Add(head);
 
-            while (hitWall(world) || hitSnake(world)) {
+            while (hitWall(world) || hitSnake(world))
+            {
                 body.Clear();
                 head = new Vector2D(x, y);
                 tail = new Vector2D(x + dir.X * initialLength, y + dir.Y * initialLength);
@@ -234,7 +235,7 @@ namespace WorldModel
             double snakeX = this.body[^1].X;
             double snakeY = this.body[^1].Y;
 
-            for (int i = 0 ; i < this.body.Count - 2; i++)
+            for (int i = 0; i < this.body.Count - 2; i++)
             {
                 //if (body.Count < 2)
                 //{
@@ -253,7 +254,7 @@ namespace WorldModel
                         if ((snakeX < TailX + 5) && (snakeX > TailX - 5) && (snakeY < TailY + 5) && (snakeY > HeadY - 5))
                         {
                             died = true;
-                            
+
                         }
                     }
                     else // Second coordinate abvove second, draw going down y axis with p2 on top
@@ -261,7 +262,7 @@ namespace WorldModel
                         if ((snakeX < HeadX + 5) && (snakeX > HeadX - 5) && (snakeY < HeadY + 5) && (snakeY > TailY - 5))
                         {
                             died = true;
-                            
+
                         }
                     }
                 }
@@ -274,7 +275,7 @@ namespace WorldModel
                         if ((snakeX > TailX - 5) && (snakeX < HeadX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                         {
                             died = true;
-                            
+
                         }
                     }
                     else
@@ -282,7 +283,7 @@ namespace WorldModel
                         if ((snakeX > HeadX - 5) && (snakeX < TailX + 5) && (snakeY > TailY - 5) && (snakeY < TailY + 5))
                         {
                             died = true;
-                           
+
                         }
                     }
                 }
@@ -298,12 +299,13 @@ namespace WorldModel
                 {
                     continue;
                 }
-                
+
                 double snakeX = this.body[^1].X;
                 double snakeY = this.body[^1].Y;
-                
-                for (int i = 0; i < theWorld.Snakes[s].body.Count - 1; i++) {
-                    
+
+                for (int i = 0; i < theWorld.Snakes[s].body.Count - 1; i++)
+                {
+
 
                     double TailX = theWorld.Snakes[s].body[i].X;//x1
                     double TailY = theWorld.Snakes[s].body[i].Y;//y1
@@ -318,7 +320,7 @@ namespace WorldModel
                             {
                                 died = true;
                                 return true;
-                               
+
                             }
                         }
                         else // Second coordinate abvove second, draw going down y axis with p2 on top
@@ -387,7 +389,7 @@ namespace WorldModel
                             {
                                 died = true;
                                 return true;
-                                
+
                             }
 
                         }

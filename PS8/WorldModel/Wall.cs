@@ -9,7 +9,7 @@ namespace WorldModel
     /// </summary>
     [DataContract(Name = "Wall", Namespace = "")]
     public class Wall
-	{
+    {
         /// <summary>
         /// a field for the walls unique ID
         /// </summary>
@@ -31,13 +31,13 @@ namespace WorldModel
         /// <param name="wall"></param>
         /// <param name="p1"></param>
         /// <param name="p2"></param>
-        
-		public Wall(int wall, Vector2D p1, Vector2D p2)
-		{
-			this.wall = wall;
-			this.p1 = p1;
-			this.p2 = p2;
-		}
-	}
+
+        public Wall(int wall, Vector2D p1, Vector2D p2)
+        {
+            this.wall = wall;
+            this.p1 = p1;
+            this.p2 = p2;
+        }
+    }
 }
 

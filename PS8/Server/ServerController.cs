@@ -145,15 +145,9 @@ namespace Server {
                 string toSend = "";
                 lock (world) {
                     foreach (Powerup p in powerupsToRemove) {
-                        //world.Powerups.Remove(p.power);
 
-                        Powerup.incrementPowerups(world, p);
+                        Powerup.movePowerup(world, p);
 
-                    }
-
-                    foreach (Snake s in snakesToRemove)
-                    {
-                       
                     }
                     
                 }

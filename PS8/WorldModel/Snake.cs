@@ -46,7 +46,7 @@ namespace WorldModel
         public bool join { get; private set; }
 
         public int width = 10;
-        public int speed = 3;
+        public int speed = 6;
         public int initialLength = 120;
         public bool isGrowing = false;
         public int growCounter = 24;

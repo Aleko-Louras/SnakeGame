@@ -158,6 +158,7 @@ namespace Server {
                     {
                         s.Move();
                     }
+                    s.hitSnake(world, snakesToRemove);
                     s.hitPowerup(world, powerupsToRemove);
                     s.hitWall(world, snakesToRemove);
                     s.Respawn(world);
